@@ -8,7 +8,6 @@ import {
 } from "react-native";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { Colors } from "@/constants/Colors";
-import { useAppContext } from "@/contexts/AppContext";
 import SettingItem from "@/components/SettingItem";
 import PidSettingModal from "@/components/PidSettingModal";
 import RangeModal from "@/components/RangeModal";
@@ -16,12 +15,14 @@ import { Alert, ActivityIndicator } from "react-native";
 import { ThemedView } from "@/components/ThemedView";
 import TextModal from "@/components/TextModal";
 import ConnectionSettingModal from "@/components/ConnectionSettingModal";
+import useAppStore from "@/lib/useAppStore";
 
 export default function CreateScreen() {
   const {
-    state: { baseUrl, isOnline, ki, kp, kd, sensorDiff, boilingPoint },
-    dispatch,
-  } = useAppContext();
+    isOnline,
+    settings: { ki, kp, kd, sensorDiff, boilingPoint },
+    isFetcheSettings,
+  } = useAppStore();
   const colorScheme = useColorScheme();
 
   const [isPidModalVisible, setIsPidModalVisible] = useState<boolean>(false);
@@ -35,143 +36,14 @@ export default function CreateScreen() {
   const [selectKp, setSelectKp] = useState<number>(0);
   const [selectKi, setSelectKi] = useState<number>(0);
   const [selectKd, setSelectKd] = useState<number>(0);
-  const [selectSsid, setSelectSsid] = useState<string>("~");
-  const [selectPassword, setSelectPassword] = useState<string>("!");
-  const [isSaving, setIsSaving] = useState<boolean>(true);
+  const [selectSsid, setSelectSsid] = useState<string>("s");
+  const [selectPassword, setSelectPassword] = useState<string>("");
 
-  const getSettings = () => {
-    setIsSaving(true);
-    fetch(`${baseUrl}/v1/settings`, {
-      method: "GET",
-      mode: "cors",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then((json) => {
-        //console.log(json);
-        dispatch({ type: "setSettings", ...json });
-      })
-      .catch((error) => {
-        dispatch({
-          type: "setOnline",
-          newState: false,
-        });
-      })
-      .finally(() => setIsSaving(false));
-  };
-
-  const setWifi = async (ssid: string, password: string) => {
-    fetch(`${baseUrl}/v1/pid`, {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      body: JSON.stringify({
-        ssid: ssid,
-        password: password,
-      }),
-    })
-      .then((response) => response.json())
-      .then((json) => {
-        dispatch({ type: "setBaseUrl", newState: "http://" + json.ip });
-      })
-      .catch((error) => {
-        dispatch({
-          type: "setOnline",
-          newState: false,
-        });
-        showNotifyAlert();
-        console.error(error);
-      })
-      .finally(() => setIsSaving(false));
-  };
-
-  const setPid = async (kp: number, ki: number, kd: number) => {
-    fetch(`${baseUrl}/v1/pid`, {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      body: JSON.stringify({
-        kp: kp,
-        ki: ki,
-        kd: kd,
-      }),
-    })
-      .then((response) => response.json())
-      .then((json) => {
-        dispatch({ type: "setKp", newState: json.kp });
-        dispatch({ type: "setKi", newState: json.ki });
-        dispatch({ type: "setKd", newState: json.kd });
-      })
-      .catch((error) => {
-        dispatch({
-          type: "setOnline",
-          newState: false,
-        });
-        showNotifyAlert();
-        console.error(error);
-      })
-      .finally(() => setIsSaving(false));
-  };
-
-  const setSensorDiff = async (sensorDiff: number) => {
-    fetch(`${baseUrl}/v1/sensor-diff`, {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      body: JSON.stringify({
-        sensorDiff: sensorDiff,
-      }),
-    })
-      .then((response) => response.json())
-      .then((json) => {
-        dispatch({ type: "setSensorDiff", newState: json.sensorDiff });
-      })
-      .catch((error) => {
-        dispatch({
-          type: "setOnline",
-          newState: false,
-        });
-        showNotifyAlert();
-        console.error(error);
-      })
-      .finally(() => setIsSaving(false));
-  };
-
-  const setBoilingPoint = async (boilingPoint: number) => {
-    fetch(`${baseUrl}/v1/boiling-point`, {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      body: JSON.stringify({
-        boilingPoint: boilingPoint,
-      }),
-    })
-      .then((response) => response.json())
-      .then((json) => {
-        console.log(json);
-        dispatch({ type: "setBoilingPoint", newState: json.boilingPoint });
-      })
-      .catch((error) => {
-        dispatch({
-          type: "setOnline",
-          newState: false,
-        });
-        showNotifyAlert();
-        console.error(error);
-      })
-      .finally(() => setIsSaving(false));
-  };
+  const getSettings = useAppStore((state) => state.fetchSettings);
+  const setWifi = useAppStore((state) => state.fetchWifiConfig);
+  const setPid = useAppStore((state) => state.fetchPidConfig);
+  const setSensorDiff = useAppStore((state) => state.fetchSensorDiff);
+  const setBoilingPoint = useAppStore((state) => state.fetchBoilingPoint);
 
   const showNotifyAlert = () => {
     Alert.alert(
@@ -196,19 +68,19 @@ export default function CreateScreen() {
         ]}
         edges={["top"]}
       >
-        {isSaving && (
+        {isFetcheSettings && (
           <View style={styles.loader}>
             <ThemedView style={styles.indicator}>
               <ActivityIndicator size="large" color="#000" />
             </ThemedView>
           </View>
         )}
-        <ScrollView style={{}}>
+        <ScrollView style={{ paddingHorizontal: 16 }}>
           <SettingItem
             icon="tune-vertical-variant"
             name="Подключение"
             description="Настройки подключения wifi, bluetooth"
-            disabled={isSaving}
+            disabled={isFetcheSettings}
             onPress={async () => {
               try {
                 setIsWifiModalVisible(true);
@@ -221,7 +93,7 @@ export default function CreateScreen() {
             icon="tune-vertical-variant"
             name="Пид регулятор"
             description="Настройки кооэфицентов пид регулятора"
-            disabled={isSaving}
+            disabled={isFetcheSettings}
             onPress={async () => {
               try {
                 if (!isOnline) {
@@ -241,7 +113,7 @@ export default function CreateScreen() {
             icon="thermometer-lines"
             name="Настройка температурой дельты"
             description="Настройки макс. разницы темп. датчиков"
-            disabled={isSaving}
+            disabled={isFetcheSettings}
             onPress={() => {
               try {
                 if (!isOnline) {
@@ -258,7 +130,7 @@ export default function CreateScreen() {
             icon="thermometer-high"
             name="Температура кипения"
             description="Настройки температуры кипения"
-            disabled={isSaving}
+            disabled={isFetcheSettings}
             onPress={() => {
               try {
                 if (!isOnline) {
@@ -430,7 +302,6 @@ export default function CreateScreen() {
 const styles = StyleSheet.create({
   container: {
     height: "90%",
-    paddingHorizontal: 16,
     paddingTop: StatusBar.currentHeight,
   },
   loader: {

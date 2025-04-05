@@ -16,7 +16,6 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 import React, { useContext } from "react";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { AppProvider } from "@/contexts/AppContext";
 import Data from "@/components/Data";
 import { Colors } from "@/constants/Colors";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -44,21 +43,17 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <AppProvider>
-        <ThemeProvider
-          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-        >
-          <Data />
-          <Stack>
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-            <Stack.Screen name="manual" options={{ headerShown: false }} />
-            <Stack.Screen name="create" options={{ headerShown: true }} />
-            <Stack.Screen name="settings" options={{ headerShown: true }} />
-            <Stack.Screen name="+not-found" />
-          </Stack>
-          <StatusBar style="auto" />
-        </ThemeProvider>
-      </AppProvider>
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <Data />
+        <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="manual" options={{ headerShown: false }} />
+          <Stack.Screen name="create" options={{ headerShown: true }} />
+          <Stack.Screen name="settings" options={{ headerShown: true }} />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+        <StatusBar style="auto" />
+      </ThemeProvider>
     </GestureHandlerRootView>
   );
 }

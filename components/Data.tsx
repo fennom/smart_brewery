@@ -1,14 +1,13 @@
-import { useAppContext } from "@/contexts/AppContext";
+import useAppStore from "@/lib/useAppStore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
-import { useEffect, useState } from "react";
-import { Alert, Platform, PermissionsAndroid } from "react-native";
+import { useEffect } from "react";
+import { Alert } from "react-native";
 
 export default function Data() {
   const {
-    state: { baseUrl, isNeedConfirm, confirmMessage },
-    dispatch,
-  } = useAppContext();
+    info: { isNeedConfirm, confirmMessage },
+  } = useAppStore();
 
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -24,7 +23,12 @@ export default function Data() {
     ]);
   };
 
-  const [isGetInfo, setIsGetInfo] = useState<boolean>(false);
+  AsyncStorage.getItem("baseUrl").then((value) => {
+    if (value !== null) {
+      const setBaseUrl = useAppStore((state) => state.setBaseUrl);
+      setBaseUrl(value);
+    }
+  });
 
   useEffect(() => {
     if (isNeedConfirm) {
@@ -39,47 +43,13 @@ export default function Data() {
     }
   }, [isNeedConfirm]);
 
+  const setState = useAppStore((state) => state.fetchState);
   useEffect(() => {
-    const getInfo = () => {
-      AsyncStorage.getItem("baseUrl").then((value) => {
-        if (value !== null) {
-          dispatch({ type: "setBaseUrl", baseUrl: value });
-        }
-      });
-      if (isGetInfo || baseUrl === "") return;
-      setIsGetInfo(true);
-      fetch(`${baseUrl}/v1/info`, {
-        method: "GET",
-        mode: "cors",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-      })
-        .then((response) => response.json())
-        .then((json) => {
-          dispatch({ type: "setInfo", ...json });
-        })
-        .catch((error) => {
-          console.error(error);
-          dispatch({
-            type: "setOnline",
-            newState: false,
-          });
-        })
-        .finally(() => setIsGetInfo(false));
-    };
-
     const interval = setInterval(() => {
-      getInfo();
+      setState().catch((e) => alert(e.message));
     }, 1000);
 
-    getInfo();
-
-    // setTimeout(() => {
-    //   dispatch({ type: "setConfirmeMessage", newState: "Testove soobschenie" });
-    //   dispatch({ type: "setNeedConfirme", newState: true });
-    // }, 3000);
+    setState().catch((e) => alert(e.message));
 
     return () => clearInterval(interval);
   }, []);

@@ -1,30 +1,16 @@
 import React, { useState } from "react";
 import CircleButton from "@/components/CircleButton";
-import ControlSlider from "@/components/ControlSilder";
-import {
-  Image,
-  StyleSheet,
-  View,
-  Text,
-  useColorScheme,
-  ScrollView,
-} from "react-native";
-import { Pressable, Switch } from "react-native-gesture-handler";
+import { StyleSheet, View, Text, useColorScheme } from "react-native";
+import { Pressable } from "react-native-gesture-handler";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
-import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { LineChart } from "react-native-chart-kit";
 import Card from "@/components/Card";
-import { useAppContext } from "@/contexts/AppContext";
-import { Link, useNavigation } from "expo-router";
-import ListItem from "@/components/ListItem";
-import Data from "@/components/Data";
+import { useNavigation } from "expo-router";
 import ThemedButton from "@/components/ThemedButton";
-import RecipeFrom from "@/components/RecipeForm";
 import RangeModal from "@/components/RangeModal";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import useAppStore from "@/lib/useAppStore";
 
 export default function ManualScreen() {
   const [showPumpRangeModal, setShowPumpRangeModal] = useState<boolean>(false);
@@ -33,151 +19,28 @@ export default function ManualScreen() {
   const colorScheme = useColorScheme();
   const navigation = useNavigation();
   const {
-    state: {
+    info: {
       mode,
-      step,
-      stage,
       isPumpEnabled,
-      isMixerEnabled,
       isPaused,
-      isNeedConfirme,
       temperature,
       targetTemperature,
       heatLimit,
       pumpLimit,
-      recipe,
       timeToEnd,
     },
-    dispatch,
-  } = useAppContext();
+    isOnline,
+  } = useAppStore();
 
-  const start = async () => {
-    console.log("start");
-
-    const kp = await AsyncStorage.getItem("kp");
-    const ki = await AsyncStorage.getItem("ki");
-    const kd = await AsyncStorage.getItem("kd");
-
-    fetch("http://192.168.1.105/v1/start", {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      body: JSON.stringify({
-        mode: "manual",
-        kp: kp ? parseFloat(kp) : 0,
-        ki: ki ? parseFloat(ki) : 0,
-        kd: kd ? parseFloat(kd) : 0,
-      }),
-    })
-      .then((response) => {
-        console.log(response);
-        return response.json();
-      })
-      .then((json) => {
-        console.log(json);
-
-        dispatch({ type: "setMode", newState: "manual" });
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
-
-  const togglePaused = () => {
-    fetch("http://192.168.1.105/v1/paused", {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then((json) => {
-        dispatch({ type: "setPaused", newState: json.result });
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
-
-  const setTargetTemperature = (value: number) => {
-    fetch("http://192.168.1.105/v1/target-temperature", {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      body: JSON.stringify({ targetTemperature: value }),
-    })
-      .then((response) => response.json())
-      .then((json) => {
-        dispatch({ type: "setTargetTemperature", newState: value });
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
-  const setHeatLimit = (value: number) => {
-    console.log(JSON.stringify({ heatLimit: value }));
-    fetch("http://192.168.1.105/v1/heat-limit", {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      body: JSON.stringify({ heatLimit: value }),
-    })
-      .then((response) => {
-        console.log(response);
-
-        response.json();
-      })
-      .then((json) => {
-        console.log(value);
-
-        dispatch({ type: "setHeatLimit", newState: value });
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
-
-  const togglePumpSwitch = () => {
-    fetch("http://192.168.1.105/v1/pump", {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then((json) => {
-        dispatch({ type: "setPumpEnabled", newState: json.result });
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
-
-  const setPumpLimit = (value: number) => {
-    console.log(JSON.stringify({ pumpLimit: value }));
-
-    fetch("http://192.168.1.105/v1/pump-limit", {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      body: JSON.stringify({ pumpLimit: value }),
-    })
-      .then((response) => response.json())
-      .then((json) => {
-        dispatch({ type: "setPumpLimit", newState: value });
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
+  const start = useAppStore((state) => state.fetchStart);
+  const stop = useAppStore((state) => state.fetchStop);
+  const togglePaused = useAppStore((state) => state.fetchPause);
+  const togglePumpSwitch = useAppStore((state) => state.fetchPumpSwitch);
+  const setHeatLimit = useAppStore((state) => state.fetchHeatLimit);
+  const setPumpLimit = useAppStore((state) => state.fetchPumpLimit);
+  const setTargetTemperature = useAppStore(
+    (state) => state.fetchTargetTemperature
+  );
 
   const toHmsTimeString = (seconds: number) => {
     const date = new Date(seconds > 0 ? seconds / 60 : 0);
@@ -259,7 +122,7 @@ export default function ManualScreen() {
               <Card
                 icon="pump"
                 label="Насос"
-                value={pumpLimit}
+                value={pumpLimit.toString()}
                 valueSymbol="%"
                 note="Мощность насоса в %"
                 isToggle={true}
@@ -315,14 +178,11 @@ export default function ManualScreen() {
               <CircleButton
                 icon={isPaused || mode === "idle" ? "play" : "pause"}
                 onPress={async () =>
-                  mode === "idle" ? await start() : togglePaused()
+                  mode === "idle" ? await start("manual") : togglePaused()
                 }
               />
 
-              <ThemedButton
-                icon="stop"
-                onPress={() => navigation.navigate("create")}
-              >
+              <ThemedButton icon="stop" onPress={() => stop}>
                 Стоп
               </ThemedButton>
             </View>

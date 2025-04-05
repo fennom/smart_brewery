@@ -1,50 +1,35 @@
-import React, { useEffect, useState } from "react";
-import CircleButton from "@/components/CircleButton";
-import ControlSlider from "@/components/ControlSilder";
+import React, { useState } from "react";
 import {
-  Image,
   StyleSheet,
   View,
   Text,
   useColorScheme,
-  ScrollView,
   PermissionsAndroid,
-  Alert,
-  Platform,
 } from "react-native";
-import { Pressable, Switch } from "react-native-gesture-handler";
+import { Pressable } from "react-native-gesture-handler";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
-import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
-import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
-import { LineChart } from "react-native-chart-kit";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Card from "@/components/Card";
-import { useAppContext } from "@/contexts/AppContext";
-
-import { Link, useNavigation } from "expo-router";
-import ListItem from "@/components/ListItem";
-import Data from "@/components/Data";
+import { useNavigation } from "expo-router";
 import ThemedButton from "@/components/ThemedButton";
 import RecipeFrom from "@/components/RecipeForm";
 import RangeModal from "@/components/RangeModal";
-import { useThemeColor } from "@/hooks/useThemeColor";
 import * as Location from "expo-location";
 import WifiManager from "react-native-wifi-reborn";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import useAppStore from "@/lib/useAppStore";
 
 export default function HomeScreen() {
   const [showPumpRangeModal, setShowPumpRangeModal] = useState<boolean>(false);
   const colorScheme = useColorScheme();
-  const textColor = useThemeColor({}, "text");
   const navigation = useNavigation();
+
   const {
-    state: {
-      baseUrl,
+    isOnline,
+    info: {
       mode,
-      step,
-      stage,
-      isOnline,
       isPumpEnabled,
       isPaused,
       isNeedConfirm,
@@ -55,11 +40,11 @@ export default function HomeScreen() {
       recipe,
       timeToEnd,
     },
-    dispatch,
-  } = useAppContext();
+  } = useAppStore();
 
   const [ssid, setSsid] = useState("SmartBrewery");
   const [password, setPassword] = useState("123456789");
+  const setBaseUrl = useAppStore((state) => state.setBaseUrl);
 
   const requestLocationPermission = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
@@ -75,6 +60,12 @@ export default function HomeScreen() {
   };
 
   const connectWifi = async () => {
+    // setBaseUrl("http://192.168.123.123");
+    // AsyncStorage.setItem("baseUrl", "http://192.168.123.123").catch((e) =>
+    //   alert(e.message)
+    // );
+    // alert("Connection success");
+    // return;
     try {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
@@ -94,10 +85,10 @@ export default function HomeScreen() {
         await turnOnLocation();
         WifiManager.connectToProtectedSSID(ssid, password, false, false).then(
           async () => {
-            const ip = await WifiManager.getIP();
-            AsyncStorage.setItem("baseUrl", "http://" + ip);
-            dispatch({ type: "setBaseUrl", newState: "http://" + ip });
-            dispatch({ type: "setOnline", newState: true });
+            setBaseUrl("http://192.168.123.123");
+            AsyncStorage.setItem("baseUrl", "http://192.168.123.123").catch(
+              (e) => alert(e.message)
+            );
           },
           () => {
             alert("unable to connect wifi\n\n" + "Connection failed!");
@@ -119,108 +110,13 @@ export default function HomeScreen() {
     }
   };
 
-  const start = async () => {
-    fetch(`${baseUrl}/v1/start`, {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      body: JSON.stringify({
-        mode: "auto",
-      }),
-    })
-      .then((response) => response.json())
-      .then((json) => {
-        dispatch({ type: "setMode", newState: "auto" });
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
-
-  const stop = () => {
-    fetch(`${baseUrl}/v1/stop`, {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then((json) => {
-        dispatch({ type: "setMode", newState: "idle" });
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
-
-  const togglePaused = () => {
-    fetch(`${baseUrl}/v1/paused`, {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then((json) => {
-        dispatch({ type: "setPaused", newState: json.result });
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
-
-  const toggleConfirme = () => {
-    fetch(`${baseUrl}/v1/confirme`, {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then((json) => {
-        console.log(json.result);
-        dispatch({ type: "setNeedConfirme", newState: json.result });
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
-
-  const togglePumpSwitch = () => {
-    fetch(`${baseUrl}/v1/pump`, {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then((json) => {
-        dispatch({ type: "setPumpEnabled", newState: json.result });
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
-
-  const setPumpLimit = (value: number) => {
-    fetch(`${baseUrl}/v1/pump-limit`, {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      body: JSON.stringify({ pumpLimit: value }),
-    })
-      .then((response) => response.json())
-      .then((json) => {
-        dispatch({ type: "setPumpLimit", newState: value });
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
+  const start = useAppStore((state) => state.fetchStart);
+  const stop = useAppStore((state) => state.fetchStop);
+  const togglePaused = useAppStore((state) => state.fetchPause);
+  const toggleConfirme = useAppStore((state) => state.fetchConfirme);
+  const togglePumpSwitch = useAppStore((state) => state.fetchPumpSwitch);
+  const setPumpLimit = useAppStore((state) => state.fetchPumpLimit);
+  const setRecipe = useAppStore((state) => state.fetchRecipe);
 
   const toHmsTimeString = (seconds: number) => {
     const date = new Date(seconds > 0 ? seconds : 0);
@@ -316,7 +212,7 @@ export default function HomeScreen() {
               <Card
                 icon="pump"
                 label="Насос"
-                value={pumpLimit}
+                value={pumpLimit.toString()}
                 valueSymbol="%"
                 note="Мощность насоса в %"
                 isToggle={true}
@@ -330,7 +226,7 @@ export default function HomeScreen() {
               <Card
                 icon="lightning-bolt-outline"
                 label="Тэн"
-                value={heatLimit}
+                value={heatLimit.toString()}
                 valueSymbol="%"
                 note="Мощность тэна в %"
                 disabled={!isOnline}
@@ -378,9 +274,10 @@ export default function HomeScreen() {
                 }
                 onPress={async () => {
                   if (mode === "idle") {
-                    await start();
+                    await start("auto");
                   } else if (isNeedConfirm) {
                     toggleConfirme();
+                    console.log("fetchState");
                   } else {
                     togglePaused();
                   }
@@ -430,9 +327,7 @@ export default function HomeScreen() {
               <RecipeFrom
                 value={recipe}
                 immediateSaving={true}
-                onSave={(temperatures: any[]) =>
-                  dispatch({ type: "setRecipe", newState: temperatures })
-                }
+                onSave={(temperatures: any[]) => setRecipe(temperatures)}
               />
             </View>
           )}
@@ -445,9 +340,9 @@ export default function HomeScreen() {
           onCancel={() => {
             setShowPumpRangeModal(false);
           }}
-          onSave={(saveValue: number) => {
+          onSave={async (saveValue: number) => {
             setShowPumpRangeModal(false);
-            setPumpLimit(saveValue);
+            await setPumpLimit(saveValue);
           }}
         ></RangeModal>
       </SafeAreaView>

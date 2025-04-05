@@ -13,7 +13,6 @@ import {
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { Colors } from "@/constants/Colors";
 import { useNavigation } from "@react-navigation/native";
-import { useAppContext } from "@/contexts/AppContext";
 import { ThemedText } from "./ThemedText";
 import { MaterialIcons } from "@expo/vector-icons";
 import { DateTimePickerEvent } from "@react-native-community/datetimepicker";
@@ -220,9 +219,11 @@ export default function RecipeFrom({
       {!immediateSaving && (
         <Pressable
           style={[styles.saveButton]}
-          onPress={() => onSave(temperaturePauses)}
+          onPress={() => {
+            onSave(temperaturePauses);
+          }}
         >
-          <Text style={styles.saveButtonText}>Сохранить</Text>
+          <Text style={styles.saveButtonText}>Сохр!анить</Text>
         </Pressable>
       )}
       <EditItemModal

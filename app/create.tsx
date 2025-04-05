@@ -11,34 +11,20 @@ import {
 } from "react-native";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { Colors } from "@/constants/Colors";
-import { useAppContext } from "@/contexts/AppContext";
 import RecipeFrom from "@/components/RecipeForm";
 import { useNavigation } from "expo-router";
+import useAppStore from "@/lib/useAppStore";
 
 export default function CreateScreen() {
-  const { dispatch } = useAppContext();
   const navigation = useNavigation();
   const colorScheme = useColorScheme();
+  const setRecipe = useAppStore((state) => state.fetchRecipe);
 
-  const onSave = (temperaturePauses: any[]) => {
+  const onSave = async (temperaturePauses: any[]) => {
+    alert("Asdsds");
     const data = temperaturePauses.filter((i) => i.edited);
-    dispatch({ type: "setRecipe", newState: data });
-    fetch("http://192.168.1.105/v1/recipe", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    })
-      .then((response) => response.json())
-      .then((json) => {
-        dispatch({ type: "setRecipe", newState: data });
-        navigation.navigate("index");
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    await setRecipe(data);
+    navigation.navigate("index");
   };
 
   return (
