@@ -9,12 +9,17 @@ export default function Data() {
     info: { isNeedConfirm, confirmMessage },
   } = useAppStore();
 
-  Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldShowAlert: true,
-      shouldPlaySound: true,
-      shouldSetBadge: false,
-    }),
+  const setBaseUrl = useAppStore((state) => state.setBaseUrl);
+
+  Notifications.requestPermissionsAsync().then((status) => {
+    if (!status.granted) return;
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: false,
+        shouldSetBadge: false,
+      }),
+    });
   });
 
   const showNotifyAlert = () => {
@@ -25,7 +30,6 @@ export default function Data() {
 
   AsyncStorage.getItem("baseUrl").then((value) => {
     if (value !== null) {
-      const setBaseUrl = useAppStore((state) => state.setBaseUrl);
       setBaseUrl(value);
     }
   });
