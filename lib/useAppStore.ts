@@ -95,16 +95,13 @@ const useAppStore = create<AppStore>((set, get) => ({
       });
 
       if (!response.ok) {
-        set({ isOnline: false });
-        console.log(response);
         throw response;
       }
 
       set({ info: await response.json() });
       set({ isOnline: true });
-
-      console.log(get().info);
     } catch (e) {
+      set({ isOnline: false });
       alert(e);
     } finally {
       set({ isFetcheState: false });
@@ -122,12 +119,9 @@ const useAppStore = create<AppStore>((set, get) => ({
         },
       });
       if (!response.ok) {
-        set({ isOnline: false });
         throw response;
       }
       const settings = await response.json();
-      console.log(settings);
-
       set({ settings: settings });
     } catch (e) {
       alert(e);
@@ -136,151 +130,168 @@ const useAppStore = create<AppStore>((set, get) => ({
     }
   },
   fetchStart: async (mode: string) => {
-    const response = await fetch(`${get().baseUrl}/v1/start`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-
-      body: JSON.stringify({
-        mode: mode,
-      }),
-    });
-    if (!response.ok) {
-      console.error(response.status + ": " + response.statusText);
-      set({ isOnline: false });
-      return;
+    try {
+      const response = await fetch(`${get().baseUrl}/v1/start`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          mode: mode,
+        }),
+      });
+      if (!response.ok) {
+        throw response;
+      }
+      set((state) => ({
+        info: { ...state.info, mode: mode },
+      }));
+    } catch (e) {
+      alert(e);
     }
-    set((state) => ({
-      info: { ...state.info, mode: mode },
-    }));
   },
   fetchStop: async () => {
-    const response = await fetch(`${get().baseUrl}/v1/stop`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      console.error(response.status + ": " + response.statusText);
-      set({ isOnline: false });
-      return;
+    try {
+      const response = await fetch(`${get().baseUrl}/v1/stop`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        throw response;
+      }
+      set((state) => ({
+        info: { ...state.info, mode: "idle" },
+      }));
+    } catch (e) {
+      alert(e);
     }
-    set((state) => ({
-      info: { ...state.info, mode: "idle" },
-    }));
   },
   fetchPause: async () => {
-    const response = await fetch(`${get().baseUrl}/v1/paused`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      console.error(response.status + ": " + response.statusText);
-      set({ isOnline: false });
-      return;
+    try {
+      const response = await fetch(`${get().baseUrl}/v1/paused`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        throw response;
+      }
+      const json = await response.json();
+      set((state) => ({
+        info: { ...state.info, isPaused: json.result },
+      }));
+    } catch (e) {
+      alert(e);
     }
-    const json = await response.json();
-    set((state) => ({
-      info: { ...state.info, isPaused: json.result },
-    }));
   },
   fetchConfirme: async () => {
-    const response = await fetch(`${get().baseUrl}/v1/confirme`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      console.error(response.status + ": " + response.statusText);
-      set({ isOnline: false });
-      return;
+    try {
+      const response = await fetch(`${get().baseUrl}/v1/confirme`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        throw response;
+      }
+      const json = await response.json();
+      set((state) => ({
+        info: { ...state.info, isNeedConfirm: json.result },
+      }));
+    } catch (e) {
+      alert(e);
     }
-    const json = await response.json();
-    set((state) => ({
-      info: { ...state.info, isNeedConfirm: json.result },
-    }));
   },
   fetchPumpSwitch: async () => {
-    const response = await fetch(`${get().baseUrl}/v1/pump`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      console.error(response.status + ": " + response.statusText);
-      set({ isOnline: false });
-      return;
+    try {
+      const response = await fetch(`${get().baseUrl}/v1/pump`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        throw response;
+      }
+      const json = await response.json();
+      set((state) => ({
+        ...state,
+        info: { ...state.info, isPumpEnabled: json.result },
+      }));
+    } catch (e) {
+      alert(e);
     }
-    const json = await response.json();
-    set((state) => ({
-      ...state,
-      info: { ...state.info, isPumpEnabled: json.result },
-    }));
   },
   fetchPumpLimit: async (value: number) => {
-    const response = await fetch(`${get().baseUrl}/v1/pump-limit`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ pumpLimit: value }),
-    });
-    if (!response.ok) {
-      console.error(response.status + ": " + response.statusText);
-      set({ isOnline: false });
-      return;
+    try {
+      const response = await fetch(`${get().baseUrl}/v1/pump-limit`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ pumpLimit: value }),
+      });
+      if (!response.ok) {
+        throw response;
+      }
+      set((state) => ({
+        info: { ...state.info, pumpLimit: value },
+      }));
+    } catch (e) {
+      alert(e);
     }
-    set((state) => ({
-      info: { ...state.info, pumpLimit: value },
-    }));
   },
   fetchHeatLimit: async (value: number) => {
-    const response = await fetch(`${get().baseUrl}/v1/heat-limit`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ heatLimit: value }),
-    });
-    if (!response.ok) {
-      console.error(response.status + ": " + response.statusText);
-      set({ isOnline: false });
-      return;
+    try {
+      const response = await fetch(`${get().baseUrl}/v1/heat-limit`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ heatLimit: value }),
+      });
+      if (!response.ok) {
+        console.error(response.status + ": " + response.statusText);
+        set({ isOnline: false });
+        return;
+      }
+      set((state) => ({
+        info: { ...state.info, heatLimit: value },
+      }));
+    } catch (e) {
+      alert(e);
     }
-    set((state) => ({
-      info: { ...state.info, heatLimit: value },
-    }));
   },
   fetchTargetTemperature: async (value: number) => {
-    const response = await fetch(`${get().baseUrl}/v1/target-temperaturet`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ heatLimit: value }),
-    });
-    if (!response.ok) {
-      console.error(response.status + ": " + response.statusText);
-      set({ isOnline: false });
-      return;
+    try {
+      const response = await fetch(`${get().baseUrl}/v1/target-temperaturet`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ heatLimit: value }),
+      });
+      if (!response.ok) {
+        throw response;
+      }
+      set((state) => ({
+        info: { ...state.info, targetTemperature: value },
+      }));
+    } catch (e) {
+      alert(e);
     }
-    set((state) => ({
-      info: { ...state.info, targetTemperature: value },
-    }));
   },
   fetchRecipe: async (recipe: any[]) => {
     try {
