@@ -11,6 +11,7 @@ import { useNavigation } from "expo-router";
 import ThemedButton from "@/components/ThemedButton";
 import RangeModal from "@/components/RangeModal";
 import useAppStore from "@/lib/useAppStore";
+import ModeMenu from "@/components/ModeMenu";
 
 export default function ManualScreen() {
   const [showPumpRangeModal, setShowPumpRangeModal] = useState<boolean>(false);
@@ -90,24 +91,7 @@ export default function ManualScreen() {
               />
             </Pressable>
           </View>
-          <View
-            style={{
-              flexDirection: "row",
-              gap: 8,
-              paddingTop: 16,
-              paddingBottom: 32,
-            }}
-          >
-            <ThemedButton onPress={() => navigation.navigate("index")}>
-              Авто режим
-            </ThemedButton>
-            <ThemedButton
-              highlighted={true}
-              onPress={() => console.log("ssds")}
-            >
-              Ручной режим
-            </ThemedButton>
-          </View>
+          <ModeMenu selected="manual" />
           <View style={{ flexDirection: "row", paddingBottom: 32 }}>
             <View style={{ width: "50%", paddingRight: 4, gap: 8 }}>
               <Card

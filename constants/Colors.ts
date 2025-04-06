@@ -13,7 +13,15 @@ export const Colors = {
   light: {
     primary: tintColorLight,
     card: "#FCFCFC",
-    highlighted: "#242424",
+
+    menuHighlighted: "#242424",
+    menuBorderHighlighted: "#2D2D2D",
+    menuTextHighlighted: "#C1C1C1",
+
+    menu: "#FCFCFC",
+    menuBorder: "#F9F9F9",
+    menuText: "#302F3C",
+
     secondary: secondary,
     gray: "#777A95",
     lightGray: "#F5F6F8",
@@ -30,7 +38,15 @@ export const Colors = {
   dark: {
     primary: tintColorLight,
     secondary: secondary,
-    highlighted: "#FCFCFC",
+
+    menuHighlighted: "#FCFCFC",
+    menuBorderHighlighted: "#F9F9F9",
+    menuTextHighlighted: "#C1C1C1",
+
+    menu: "#242424",
+    menuBorder: "#2D2D2D",
+    menuText: "#C1C1C1",
+
     gray: "#777A95",
     card: "#1f1f1f",
     lightGray: "rgba(255, 255, 255, 0.1)",

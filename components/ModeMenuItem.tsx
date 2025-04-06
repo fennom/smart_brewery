@@ -4,19 +4,31 @@ import { ThemedText } from "./ThemedText";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useThemeColor } from "@/hooks/useThemeColor";
 
-type ThemedButtonProps = PropsWithChildren & {
+type ModeMenuItemProps = PropsWithChildren & {
   icon?: string;
   disabled?: boolean;
+  highlighted?: boolean;
   onPress: () => void;
   onDeleted?: () => void;
 };
 
-export default function ThemedButton({
+export default function ModeMenuItem({
   icon,
   onPress,
   disabled = false,
+  highlighted = false,
   children,
-}: ThemedButtonProps) {
+}: ModeMenuItemProps) {
+  const colorScheme = useColorScheme();
+  const [isFocus, setFocus] = useState(false);
+
+  const highlightedBackgroundColor = useThemeColor({}, "menuHighlighted");
+  const highlightedBorderColor = useThemeColor({}, "menuBorderHighlighted");
+  const highlightedTextColor = useThemeColor({}, "menuTextHighlighted");
+  const borderColor = useThemeColor({}, "menuBorder");
+  const backgroundColor = useThemeColor({}, "menu");
+  const textColor = useThemeColor({}, "menuText");
+
   return (
     <Pressable
       disabled={disabled}
@@ -27,13 +39,14 @@ export default function ThemedButton({
         paddingRight: 16,
         paddingTop: 4,
         paddingBottom: 5,
-        backgroundColor: "#242424",
+        backgroundColor: highlighted
+          ? highlightedBackgroundColor
+          : backgroundColor,
         borderRadius: 20,
         borderWidth: 2,
-        borderColor: "#2D2D2D",
+        borderColor: highlighted ? highlightedBorderColor : borderColor,
         flexDirection: "row",
         alignItems: "center",
-        opacity: disabled ? 0.5 : 1,
       }}
     >
       {icon && (
@@ -47,7 +60,7 @@ export default function ThemedButton({
       <ThemedText
         style={{
           fontFamily: "Manrope_400Regular",
-          color: "#C1C1C1",
+          color: highlighted ? highlightedTextColor : textColor,
         }}
       >
         {children}

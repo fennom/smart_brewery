@@ -20,6 +20,7 @@ import * as Location from "expo-location";
 import WifiManager from "react-native-wifi-reborn";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import useAppStore from "@/lib/useAppStore";
+import ModeMenu from "@/components/ModeMenu";
 
 export default function HomeScreen() {
   const [showPumpRangeModal, setShowPumpRangeModal] = useState<boolean>(false);
@@ -167,24 +168,7 @@ export default function HomeScreen() {
             </Pressable>
           </View>
 
-          <View
-            style={{
-              flexDirection: "row",
-              gap: 8,
-              paddingTop: 16,
-              paddingBottom: 32,
-            }}
-          >
-            <ThemedButton
-              highlighted={true}
-              onPress={() => console.log("ssds")}
-            >
-              Авто режим
-            </ThemedButton>
-            <ThemedButton onPress={() => navigation.navigate("manual")}>
-              Ручной режим
-            </ThemedButton>
-          </View>
+          <ModeMenu selected="auto" />
           <View style={{ flexDirection: "row", paddingBottom: 32 }}>
             <View style={{ width: "50%", paddingRight: 4, gap: 8 }}>
               {isOnline && (
