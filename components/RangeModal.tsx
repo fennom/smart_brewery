@@ -1,5 +1,5 @@
 import { ThemedText } from "@/components/ThemedText";
-import { View, Pressable, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { PropsWithChildren, useCallback, useEffect, useState } from "react";
 import Rail from "./slider/Rail";
 import RailSelected from "./slider/RailSelected";
@@ -18,6 +18,7 @@ type Props = PropsWithChildren<{
   symbol?: "gradus" | "percent";
   min?: number;
   max?: number;
+  fixed?: number;
   onCancel: () => void;
   onSave: (value: number) => void;
 }>;
@@ -30,21 +31,11 @@ export default function RangeModal({
   step = 1,
   min = 0,
   max = 100,
+  fixed,
   onCancel,
   onSave,
 }: Props) {
   const [currentValue, setCurrentValue] = useState(value);
-  const increment = () => {
-    if (currentValue < max) {
-      setCurrentValue(currentValue + 1);
-    }
-  };
-  const decrement = () => {
-    if (currentValue > min) {
-      setCurrentValue(currentValue - 1);
-    }
-  };
-
   const renderThumb = useCallback(
     (name: "high" | "low") => <Thumb name={name} />,
     []
@@ -107,13 +98,13 @@ export default function RangeModal({
           onValueChanged={handleValueChange}
         />
       </View>
-
       <RangeInput
         value={currentValue}
         symbol={symbol}
         min={min}
         max={max}
         step={step}
+        fixed={fixed}
         onEdite={(v: number) => setCurrentValue(v)}
       />
     </Sheet>

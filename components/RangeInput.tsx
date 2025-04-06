@@ -1,20 +1,14 @@
 import { ThemedText } from "@/components/ThemedText";
-import { View, StyleSheet, TextInput } from "react-native";
-import { PropsWithChildren, useCallback, useEffect, useState } from "react";
-import { Pressable, Switch } from "react-native-gesture-handler";
-import Rail from "./slider/Rail";
-import RailSelected from "./slider/RailSelected";
-import Label from "./slider/Label";
-import Notch from "./slider/Notch";
-import Thumb from "./slider/Thumb";
-import Slider from "crn-range-slider";
-import Sheet from "./Sheet";
+import { View, StyleSheet } from "react-native";
+import { PropsWithChildren } from "react";
+import { Pressable } from "react-native-gesture-handler";
 
 type Props = PropsWithChildren<{
   value: number;
   symbol?: "gradus" | "percent";
   min: number;
   max: number;
+  fixed?: number;
   step?: number;
   onEdite: (value: number) => void;
 }>;
@@ -24,6 +18,7 @@ export default function RangeInput({
   symbol,
   min,
   max,
+  fixed = 0,
   step = 1,
   onEdite,
 }: Props) {
@@ -76,7 +71,7 @@ export default function RangeInput({
               fontFamily: "Manrope_500Medium",
             }}
           >
-            {value?.toFixed(3)}
+            {value?.toFixed(fixed)}
           </ThemedText>
           {symbol === "gradus" && (
             <ThemedText
