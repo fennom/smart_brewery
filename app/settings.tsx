@@ -54,17 +54,22 @@ export default function CreateScreen() {
   };
 
   useEffect(() => {
+    if (!isOnline) {
+      showNotifyAlert();
+      return;
+    }
     getSettings();
   }, []);
-
-  //();
 
   return (
     <SafeAreaProvider>
       <SafeAreaView
         style={[
           styles.container,
-          { backgroundColor: Colors[colorScheme ?? "light"].background },
+          {
+            backgroundColor: Colors[colorScheme ?? "light"].background,
+            flex: 1,
+          },
         ]}
         edges={["top"]}
       >
@@ -77,9 +82,9 @@ export default function CreateScreen() {
         )}
         <ScrollView style={{ paddingHorizontal: 16 }}>
           <SettingItem
-            icon="tune-vertical-variant"
+            icon="wifi-settings"
             name="Подключение"
-            description="Настройки подключения wifi, bluetooth"
+            description="Настройки подключения wifi"
             disabled={isFetcheSettings}
             onPress={async () => {
               try {
@@ -191,6 +196,7 @@ export default function CreateScreen() {
           step={0.001}
           min={0}
           max={1}
+          fixed={3}
           value={selectKp}
           onCancel={() => {
             setIsPidModalVisible(true);
@@ -209,6 +215,7 @@ export default function CreateScreen() {
           value={selectKi}
           min={0}
           max={1}
+          fixed={3}
           onCancel={() => {
             setIsPidModalVisible(true);
             setTypeEdit(null);
@@ -225,6 +232,7 @@ export default function CreateScreen() {
           step={0.001}
           min={0}
           max={1}
+          fixed={3}
           value={selectKd}
           onCancel={() => {
             setIsPidModalVisible(true);
