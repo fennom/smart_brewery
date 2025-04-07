@@ -48,8 +48,26 @@ export default function RootLayout() {
         <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="manual" options={{ headerShown: false }} />
-          <Stack.Screen name="create" options={{ headerShown: true }} />
-          <Stack.Screen name="settings" options={{ headerShown: true }} />
+          <Stack.Screen
+            name="create"
+            options={{
+              headerShown: true,
+              headerStyle: {
+                backgroundColor: Colors[colorScheme ?? "light"].background,
+              },
+              headerTintColor: Colors[colorScheme ?? "light"].text,
+            }}
+          />
+          <Stack.Screen
+            name="settings"
+            options={{
+              headerShown: true,
+              headerStyle: {
+                backgroundColor: Colors[colorScheme ?? "light"].background,
+              },
+              headerTintColor: Colors[colorScheme ?? "light"].text,
+            }}
+          />
           <Stack.Screen name="+not-found" />
         </Stack>
         <StatusBar style="auto" />
