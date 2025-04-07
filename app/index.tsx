@@ -1,10 +1,8 @@
 import React, { useState } from "react";
-import { StyleSheet, View, Text, useColorScheme } from "react-native";
-import { Pressable } from "react-native-gesture-handler";
+import { StyleSheet, View, useColorScheme } from "react-native";
 import { Colors } from "@/constants/Colors";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { ThemedText } from "@/components/ThemedText";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Card from "@/components/Card";
 import { useRouter } from "expo-router";
 import ThemedButton from "@/components/ThemedButton";
@@ -13,6 +11,7 @@ import RangeModal from "@/components/RangeModal";
 import useAppStore from "@/lib/useAppStore";
 import ModeMenu from "@/components/ModeMenu";
 import ConnectionCard from "@/components/ConnectionCard";
+import HeaderModeMenu from "@/components/HeaderModeMenu";
 
 export default function HomeScreen() {
   const [showPumpRangeModal, setShowPumpRangeModal] = useState<boolean>(false);
@@ -68,30 +67,7 @@ export default function HomeScreen() {
             height: "100%",
           }}
         >
-          <View
-            style={{ flexDirection: "row", justifyContent: "space-between" }}
-          >
-            <Text style={{}}>
-              <ThemedText
-                style={{ fontSize: 24, fontFamily: "Manrope_300Light" }}
-              >
-                Выбирите {"\n"}
-              </ThemedText>
-              <ThemedText
-                style={{ fontSize: 24, fontFamily: "Manrope_500Medium" }}
-              >
-                Режим работы
-              </ThemedText>
-            </Text>
-            <Pressable onPress={() => router.navigate("/settings")}>
-              <MaterialCommunityIcons
-                name="cog-outline"
-                color={Colors[colorScheme ?? "light"].text}
-                size={24}
-              />
-            </Pressable>
-          </View>
-
+          <HeaderModeMenu />
           <ModeMenu selected="auto" />
           <View style={{ flexDirection: "row", paddingBottom: 32 }}>
             <View style={{ width: "50%", paddingRight: 4, gap: 8 }}>
