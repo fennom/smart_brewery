@@ -12,6 +12,7 @@ import ThemedButton from "@/components/ThemedButton";
 import RangeModal from "@/components/RangeModal";
 import useAppStore from "@/lib/useAppStore";
 import ModeMenu from "@/components/ModeMenu";
+import ConnectionCard from "@/components/ConnectionCard";
 
 export default function ManualScreen() {
   const [showPumpRangeModal, setShowPumpRangeModal] = useState<boolean>(false);
@@ -94,15 +95,18 @@ export default function ManualScreen() {
           <ModeMenu selected="manual" />
           <View style={{ flexDirection: "row", paddingBottom: 32 }}>
             <View style={{ width: "50%", paddingRight: 4, gap: 8 }}>
-              <Card
-                icon="thermometer"
-                label="Температура"
-                value={temperature.toFixed(1) + "°"}
-                subValue={targetTemperature + "°"}
-                note="Текущая/Целевая"
-                type="blue"
-                onPress={() => setShowTempRangeModal(true)}
-              ></Card>
+              {isOnline && (
+                <Card
+                  icon="thermometer"
+                  label="Температура"
+                  value={temperature.toFixed(1) + "°"}
+                  subValue={targetTemperature + "°"}
+                  note="Текущая/Целевая"
+                  type="blue"
+                  onPress={() => setShowTempRangeModal(true)}
+                ></Card>
+              )}
+              {!isOnline && <ConnectionCard></ConnectionCard>}
               <Card
                 icon="pump"
                 label="Насос"
@@ -119,7 +123,7 @@ export default function ManualScreen() {
               <Card
                 icon="lightning-bolt-outline"
                 label="Тэн"
-                value={heatLimit}
+                value={heatLimit.toS}
                 valueSymbol="%"
                 note="Мощность тэна в %"
                 onPress={() => setShowHeatRangeModal(true)}
