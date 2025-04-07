@@ -6,7 +6,7 @@ import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { ThemedText } from "@/components/ThemedText";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Card from "@/components/Card";
-import { useNavigation } from "expo-router";
+import { useRouter } from "expo-router";
 import ThemedButton from "@/components/ThemedButton";
 import RecipeFrom from "@/components/RecipeForm";
 import RangeModal from "@/components/RangeModal";
@@ -17,7 +17,7 @@ import ConnectionCard from "@/components/ConnectionCard";
 export default function HomeScreen() {
   const [showPumpRangeModal, setShowPumpRangeModal] = useState<boolean>(false);
   const colorScheme = useColorScheme();
-  const navigation = useNavigation();
+  const router = useRouter();
 
   const {
     isOnline,
@@ -83,7 +83,7 @@ export default function HomeScreen() {
                 Режим работы
               </ThemedText>
             </Text>
-            <Pressable onPress={() => navigation.navigate("settings")}>
+            <Pressable onPress={() => router.navigate("/settings")}>
               <MaterialCommunityIcons
                 name="cog-outline"
                 color={Colors[colorScheme ?? "light"].text}
@@ -206,7 +206,7 @@ export default function HomeScreen() {
               </ThemedText>
               <View>
                 <ThemedButton
-                  onPress={() => navigation.navigate("create")}
+                  onPress={() => router.navigate("/create")}
                   disabled={!isOnline}
                 >
                   Добавить рецепт

@@ -1,5 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
-import TextInput from "@/components/TextInput";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -8,20 +7,11 @@ import {
   useColorScheme,
   StatusBar,
   Pressable,
-  TextInput as ReactInput,
 } from "react-native";
-import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
-import { Colors } from "@/constants/Colors";
-import { useNavigation } from "@react-navigation/native";
 import { ThemedText } from "./ThemedText";
-import { MaterialIcons } from "@expo/vector-icons";
-import { DateTimePickerEvent } from "@react-native-community/datetimepicker";
-import { Link } from "expo-router";
 import ListItem from "./ListItem";
 import EditItemModal from "./EditItemModal";
-import Slider from "@react-native-community/slider";
 import RangeModal from "./RangeModal";
-import Sheet from "./Sheet";
 import TimeModal from "./TimeModal";
 
 type Props = {

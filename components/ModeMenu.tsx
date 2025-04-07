@@ -2,14 +2,14 @@ import { StyleSheet, View } from "react-native";
 import React, { PropsWithChildren } from "react";
 
 import ModeMenuItem from "./ModeMenuItem";
-import { useNavigation } from "expo-router";
+import { useRouter } from "expo-router";
 
 type ModeMenuProps = PropsWithChildren & {
   selected: "auto" | "manual";
 };
 
 export default function ModeMenu({ selected }: ModeMenuProps) {
-  const navigation = useNavigation();
+  const router = useRouter();
 
   return (
     <View
@@ -23,14 +23,14 @@ export default function ModeMenu({ selected }: ModeMenuProps) {
       <ModeMenuItem
         highlighted={selected === "auto"}
         disabled={selected === "auto"}
-        onPress={() => navigation.navigate("index")}
+        onPress={() => router.navigate("/")}
       >
         Авто режим
       </ModeMenuItem>
       <ModeMenuItem
         highlighted={selected === "manual"}
         disabled={selected === "manual"}
-        onPress={() => navigation.navigate("manual")}
+        onPress={() => router.navigate("/manual")}
       >
         Ручной режим
       </ModeMenuItem>

@@ -7,7 +7,7 @@ import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { ThemedText } from "@/components/ThemedText";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Card from "@/components/Card";
-import { useNavigation } from "expo-router";
+import { useRouter } from "expo-router";
 import ThemedButton from "@/components/ThemedButton";
 import RangeModal from "@/components/RangeModal";
 import useAppStore from "@/lib/useAppStore";
@@ -19,7 +19,7 @@ export default function ManualScreen() {
   const [showTempRangeModal, setShowTempRangeModal] = useState<boolean>(false);
   const [showHeatRangeModal, setShowHeatRangeModal] = useState<boolean>(false);
   const colorScheme = useColorScheme();
-  const navigation = useNavigation();
+  const router = useRouter();
   const {
     info: {
       mode,
@@ -84,7 +84,7 @@ export default function ManualScreen() {
                 Режим работы
               </ThemedText>
             </Text>
-            <Pressable onPress={() => navigation.navigate("settings")}>
+            <Pressable onPress={() => router.navigate("/settings")}>
               <MaterialCommunityIcons
                 name="cog-outline"
                 color={Colors[colorScheme ?? "light"].text}
@@ -123,7 +123,7 @@ export default function ManualScreen() {
               <Card
                 icon="lightning-bolt-outline"
                 label="Тэн"
-                value={heatLimit.toS}
+                value={heatLimit.toString()}
                 valueSymbol="%"
                 note="Мощность тэна в %"
                 onPress={() => setShowHeatRangeModal(true)}
