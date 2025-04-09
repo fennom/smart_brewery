@@ -292,6 +292,7 @@ export default function CreateScreen() {
           isVisible={typeEdit === "password" && !isWifiModalVisible}
           label="Пароль"
           value={selectPassword}
+          secureTextEntry={true}
           onCancel={() => {
             setTypeEdit(null);
             setIsWifiModalVisible(true);
