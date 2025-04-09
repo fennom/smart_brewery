@@ -1,7 +1,6 @@
 import {
   View,
   StyleSheet,
-  Text,
   useColorScheme,
   TextInput as ReactInput,
   KeyboardTypeOptions,
@@ -14,6 +13,7 @@ type Props = {
   value: any;
   label: string;
   keyboardType: KeyboardTypeOptions;
+  secureTextEntry?: boolean;
   onChangeText: (value: string) => void;
 };
 
@@ -22,6 +22,7 @@ export default function TextInput({
   value,
   label,
   keyboardType,
+  secureTextEntry = false,
 }: Props) {
   const colorScheme = useColorScheme();
   const [isFocus, setFocus] = useState(false);
@@ -44,6 +45,7 @@ export default function TextInput({
           isFocus && { borderColor: Colors[colorScheme ?? "light"].primary },
           { color: Colors[colorScheme ?? "light"].text },
         ]}
+        secureTextEntry={secureTextEntry}
         onChangeText={onChangeText}
         keyboardType={keyboardType}
         onFocus={() => setFocus(true)}
@@ -62,7 +64,7 @@ const styles = StyleSheet.create({
     paddingBottom: 7,
     fontSize: 14,
     lineHeight: 14,
-    outlineStyle: "none",
+    //    outlineStyle: "none",
   },
   inputLabel: {
     fontSize: 12,

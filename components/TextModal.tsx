@@ -8,6 +8,7 @@ type Props = PropsWithChildren<{
   isVisible: boolean;
   value: string;
   label: string;
+  secureTextEntry?: boolean;
   onCancel: () => void;
   onSave: (value: string) => void;
 }>;
@@ -16,6 +17,7 @@ export default function TextModal({
   isVisible,
   label,
   value,
+  secureTextEntry = false,
   onCancel,
   onSave,
 }: Props) {
@@ -55,6 +57,7 @@ export default function TextModal({
           label={label}
           keyboardType="default"
           value={currentValue}
+          secureTextEntry={secureTextEntry}
           onChangeText={setCurrentValue}
         />
       </View>
