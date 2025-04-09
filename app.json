@@ -47,7 +47,8 @@
         {
           "fineLocationPermission": false
         }
-      ]
+      ],
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true
@@ -59,6 +60,10 @@
       "eas": {
         "projectId": "3ef60a57-5151-4e90-ba8f-3a5fe7e9079a"
       }
+    },
+    "locales": {
+      "en": "./i18n/locales/en.json",
+      "ru": "./i18n/locales/ru.json"
     }
   }
 }

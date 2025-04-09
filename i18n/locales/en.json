@@ -1,0 +1,95 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Retry"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password"
+  },
+  "pid": {
+    "title": "PID Controller Components",
+    "proportional": "Proportional",
+    "integral": "Integral",
+    "derivative": "Derivative",
+    "name": "PID Controller",
+    "description": "PID controller coefficients settings",
+    "kp": "Proportional",
+    "ki": "Integral",
+    "kd": "Derivative"
+  },
+  "alerts": {
+    "confirmation": "Confirmation Required",
+    "editError": "Edit Error",
+    "editErrorDescription": "To edit settings, make sure the app is connected to the automation",
+    "saveError": "Save Error"
+  },
+  "header": {
+    "select": "Select",
+    "mode": "Operation Mode"
+  },
+  "settings": {
+    "connection": {
+      "name": "Connection",
+      "description": "WiFi connection settings",
+      "ssid": "SSID",
+      "password": "Password"
+    },
+    "temperatureDelta": {
+      "name": "Temperature Delta Settings",
+      "description": "Maximum temperature difference between sensors settings",
+      "label": "Maximum temperature difference between sensors"
+    },
+    "boilingPoint": {
+      "name": "Boiling Point Settings",
+      "description": "Boiling point settings",
+      "label": "Boiling Point"
+    }
+  },
+  "main": {
+    "temperature": {
+      "label": "Temperature",
+      "note": "Current/Target"
+    },
+    "pump": {
+      "label": "Pump",
+      "note": "Pump power in %"
+    },
+    "heater": {
+      "label": "Heater",
+      "note": "Heater power in %"
+    },
+    "time": {
+      "label": "Time",
+      "note": "Remaining time"
+    },
+    "stages": "Stages",
+    "mashing": " mashing",
+    "controls": {
+      "start": "Start",
+      "pause": "Pause",
+      "reset": "Reset",
+      "stop": "Stop"
+    },
+    "recipe": {
+      "notSelected": "Recipe not selected",
+      "add": "Add recipe"
+    },
+    "connection": {
+      "label": "Connection",
+      "note": "No connection"
+    },
+    "temperaturePause": "Temperature pause",
+    "duration": "Duration",
+    "power": "Power",
+    "hops": "Hops",
+    "add": "Add",
+    "auto": "Auto mode",
+    "manual": "Manual mode",
+    "save": "Save",
+    "cancel": "Cancel"
+  }
+} 

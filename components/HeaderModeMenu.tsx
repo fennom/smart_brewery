@@ -3,6 +3,7 @@ import { ThemedText } from "./ThemedText";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
 import { useRouter } from "expo-router";
+import i18n from "../i18n";
 
 export default function HeaderModeMenu() {
   const colorScheme = useColorScheme();
@@ -11,10 +12,11 @@ export default function HeaderModeMenu() {
     <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
       <Text style={{}}>
         <ThemedText style={{ fontSize: 24, fontFamily: "Manrope_300Light" }}>
-          Выбирите {"\n"}
+          {i18n.t("header.select")}
+          {"\n"}
         </ThemedText>
         <ThemedText style={{ fontSize: 24, fontFamily: "Manrope_500Medium" }}>
-          Режим работы
+          {i18n.t("header.mode")}
         </ThemedText>
       </Text>
       <Pressable onPress={() => router.navigate("/settings")}>

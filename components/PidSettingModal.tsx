@@ -3,6 +3,7 @@ import { View, StyleSheet } from "react-native";
 import { Pressable } from "react-native-gesture-handler";
 import { PropsWithChildren } from "react";
 import Sheet from "./Sheet";
+import i18n from "../i18n";
 
 type Props = PropsWithChildren<{
   isVisible: boolean;
@@ -47,7 +48,7 @@ export default function PidSettingModal({
             textAlign: "center",
           }}
         >
-          Составляющие пид регулятора
+          {i18n.t("pid.title")}
         </ThemedText>
       </View>
       <Pressable
@@ -61,7 +62,7 @@ export default function PidSettingModal({
         }}
       >
         <ThemedText style={{ flex: 5, fontFamily: "Manrope_400Regular" }}>
-          Пропорциональная
+          {i18n.t("pid.proportional")}
         </ThemedText>
         <ThemedText style={{ flex: 1, fontFamily: "Manrope_500Medium" }}>
           {kp.toFixed(3)}
@@ -78,7 +79,7 @@ export default function PidSettingModal({
         }}
       >
         <ThemedText style={{ flex: 5, fontFamily: "Manrope_400Regular" }}>
-          Интегрирующая
+          {i18n.t("pid.integral")}
         </ThemedText>
         <View style={{ flex: 1 }}>
           <ThemedText style={{ fontFamily: "Manrope_500Medium" }}>
@@ -97,7 +98,7 @@ export default function PidSettingModal({
         }}
       >
         <ThemedText style={{ flex: 5, fontFamily: "Manrope_400Regular" }}>
-          Дифференцирующая
+          {i18n.t("pid.derivative")}
         </ThemedText>
         <ThemedText style={{ flex: 1, fontFamily: "Manrope_500Medium" }}>
           {kd.toFixed(3)}

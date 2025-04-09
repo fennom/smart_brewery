@@ -1,6 +1,6 @@
 import { StyleSheet, View } from "react-native";
 import React, { PropsWithChildren } from "react";
-
+import i18n from "../i18n";
 import ModeMenuItem from "./ModeMenuItem";
 import { useRouter } from "expo-router";
 
@@ -25,14 +25,14 @@ export default function ModeMenu({ selected }: ModeMenuProps) {
         disabled={selected === "auto"}
         onPress={() => router.navigate("/")}
       >
-        Авто режим
+        {i18n.t("main.auto")}
       </ModeMenuItem>
       <ModeMenuItem
         highlighted={selected === "manual"}
         disabled={selected === "manual"}
         onPress={() => router.navigate("/manual")}
       >
-        Ручной режим
+        {i18n.t("main.manual")}
       </ModeMenuItem>
     </View>
   );

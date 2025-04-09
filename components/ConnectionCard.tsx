@@ -5,7 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import useAppStore from "@/lib/useAppStore";
 import Card from "./Card";
 import { useState } from "react";
-
+import i18n from "../i18n";
 export default function ConnectionCard() {
   const [ssid, setSsid] = useState("SmartBrewery");
   const [password, setPassword] = useState("123456789");
@@ -78,9 +78,9 @@ export default function ConnectionCard() {
   return (
     <Card
       icon="access-point-remove"
-      label=""
+      label={""}
       value="N/A"
-      note="Нет подключения"
+      note={i18n.t("main.connection.note")}
       type="orange"
       isToggle={true}
       isEnable={false}

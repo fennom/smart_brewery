@@ -3,7 +3,7 @@ import { View, StyleSheet } from "react-native";
 import { Pressable } from "react-native-gesture-handler";
 import { PropsWithChildren } from "react";
 import Sheet from "./Sheet";
-
+import i18n from "../i18n";
 type Props = PropsWithChildren<{
   isVisible: boolean;
   onEdit: (type: "ssid" | "password", index?: number) => void;
@@ -41,7 +41,7 @@ export default function ConnectionSettingModal({
             textAlign: "center",
           }}
         >
-          Настройка подключения WiFi
+          {i18n.t("settings.connection.name")}
         </ThemedText>
       </View>
       <Pressable
@@ -55,7 +55,7 @@ export default function ConnectionSettingModal({
         }}
       >
         <ThemedText style={{ flex: 5, fontFamily: "Manrope_400Regular" }}>
-          SSID
+          {i18n.t("settings.connection.ssid")}
         </ThemedText>
       </Pressable>
       <Pressable
@@ -69,7 +69,7 @@ export default function ConnectionSettingModal({
         }}
       >
         <ThemedText style={{ flex: 5, fontFamily: "Manrope_400Regular" }}>
-          Пароль
+          {i18n.t("settings.connection.password")}
         </ThemedText>
       </Pressable>
     </Sheet>

@@ -12,6 +12,7 @@ import useAppStore from "@/lib/useAppStore";
 import ModeMenu from "@/components/ModeMenu";
 import ConnectionCard from "@/components/ConnectionCard";
 import HeaderModeMenu from "@/components/HeaderModeMenu";
+import i18n from "../i18n";
 
 export default function ManualScreen() {
   const [showPumpRangeModal, setShowPumpRangeModal] = useState<boolean>(false);
@@ -75,10 +76,10 @@ export default function ManualScreen() {
               {isOnline && (
                 <Card
                   icon="thermometer"
-                  label="Температура"
+                  label={i18n.t("main.temperature.label")}
                   value={temperature.toFixed(1) + "°"}
                   subValue={targetTemperature + "°"}
-                  note="Текущая/Целевая"
+                  note={i18n.t("main.temperature.note")}
                   type="blue"
                   onPress={() => setShowTempRangeModal(true)}
                 ></Card>
@@ -86,10 +87,10 @@ export default function ManualScreen() {
               {!isOnline && <ConnectionCard></ConnectionCard>}
               <Card
                 icon="pump"
-                label="Насос"
+                label={i18n.t("main.pump.label")}
                 value={pumpLimit.toString()}
                 valueSymbol="%"
-                note="Мощность насоса в %"
+                note={i18n.t("main.pump.note")}
                 isToggle={true}
                 isEnable={isPumpEnabled}
                 onPress={() => setShowPumpRangeModal(true)}
@@ -99,17 +100,17 @@ export default function ManualScreen() {
             <View style={{ width: "50%", paddingLeft: 4, gap: 8 }}>
               <Card
                 icon="lightning-bolt-outline"
-                label="Тэн"
+                label={i18n.t("main.heater.label")}
                 value={heatLimit.toString()}
                 valueSymbol="%"
-                note="Мощность тэна в %"
+                note={i18n.t("main.heater.note")}
                 onPress={() => setShowHeatRangeModal(true)}
               ></Card>
               <Card
                 icon="timer-outline"
-                label="Время"
+                label={i18n.t("main.time.label")}
                 value={toHmsTimeString(timeToEnd)}
-                note="Оставшееся время"
+                note={i18n.t("main.time.note")}
                 isToggle={true}
               ></Card>
             </View>
@@ -123,9 +124,9 @@ export default function ManualScreen() {
             }}
           >
             <ThemedText style={{ fontFamily: "Manrope_300Light" }}>
-              Этапы
+              {i18n.t("main.stages")}
               <ThemedText style={{ fontFamily: "Manrope_500Medium" }}>
-                {" затерания"}
+                {i18n.t("main.mashing")}
               </ThemedText>
             </ThemedText>
             <View style={{ flexDirection: "row", gap: 8 }}></View>
@@ -148,14 +149,14 @@ export default function ManualScreen() {
               />
 
               <ThemedButton icon="stop" onPress={() => stop}>
-                Стоп
+                {i18n.t("main.controls.stop")}
               </ThemedButton>
             </View>
           </View>
         </View>
         <RangeModal
           isVisible={showTempRangeModal}
-          label="Температура"
+          label={i18n.t("main.temperature.label")}
           value={targetTemperature}
           symbol="gradus"
           onCancel={() => {
@@ -168,7 +169,7 @@ export default function ManualScreen() {
         ></RangeModal>
         <RangeModal
           isVisible={showHeatRangeModal}
-          label="Тэн"
+          label={i18n.t("main.heater.label")}
           value={heatLimit}
           symbol="percent"
           onCancel={() => {
@@ -181,7 +182,7 @@ export default function ManualScreen() {
         ></RangeModal>
         <RangeModal
           isVisible={showPumpRangeModal}
-          label="Насос"
+          label={i18n.t("main.pump.label")}
           value={pumpLimit}
           symbol="percent"
           onCancel={() => {

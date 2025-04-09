@@ -3,6 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
 import { useEffect } from "react";
 import { Alert } from "react-native";
+import i18n from "../i18n";
 
 export default function Data() {
   const {
@@ -23,7 +24,7 @@ export default function Data() {
   });
 
   const showNotifyAlert = () => {
-    Alert.alert("Требуется подтверждение", confirmMessage, [
+    Alert.alert(i18n.t("alerts.confirmation"), confirmMessage, [
       { text: "OK", onPress: () => console.log("OK Pressed") },
     ]);
   };
@@ -38,7 +39,7 @@ export default function Data() {
     if (isNeedConfirm) {
       Notifications.scheduleNotificationAsync({
         content: {
-          title: "Требуется подтверждение",
+          title: i18n.t("alerts.confirmation"),
           body: confirmMessage,
         },
         trigger: null,

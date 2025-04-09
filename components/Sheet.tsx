@@ -11,6 +11,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import i18n from "../i18n";
 
 type Props = PropsWithChildren<{
   isVisible: boolean;
@@ -71,10 +72,10 @@ export default function Sheet({
         {children}
         <View style={styles.controls}>
           <Pressable style={styles.button} onPress={onCancel}>
-            <ThemedText>Отменить</ThemedText>
+            <ThemedText>{i18n.t("main.cancel")}</ThemedText>
           </Pressable>
           <Pressable style={styles.button} onPress={onSave}>
-            <ThemedText>Сохранить</ThemedText>
+            <ThemedText>{i18n.t("main.save")}</ThemedText>
           </Pressable>
         </View>
       </Animated.View>

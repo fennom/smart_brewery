@@ -4,7 +4,7 @@ import { PropsWithChildren } from "react";
 import Sheet from "./Sheet";
 import ListItem from "./ListItem";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-
+import I18n from "../i18n";
 type Props = PropsWithChildren<{
   isVisible: boolean;
   temp: number;
@@ -52,7 +52,7 @@ export default function EditItemModal({
             textAlign: "center",
           }}
         >
-          Температурная пауза
+          {I18n.t("main.temperaturePause")}
         </ThemedText>
       </View>
       <Pressable
@@ -66,7 +66,7 @@ export default function EditItemModal({
         }}
       >
         <ThemedText style={{ flex: 5, fontFamily: "Manrope_400Regular" }}>
-          Температруа
+          {I18n.t("main.temperaturePause")}
         </ThemedText>
         <ThemedText style={{ flex: 1, fontFamily: "Manrope_500Medium" }}>
           {temp}
@@ -84,7 +84,7 @@ export default function EditItemModal({
         }}
       >
         <ThemedText style={{ flex: 5, fontFamily: "Manrope_400Regular" }}>
-          Продолжительность
+          {I18n.t("main.duration")}
         </ThemedText>
         <View style={{ flex: 1 }}>
           <ThemedText style={{ fontFamily: "Manrope_500Medium" }}>
@@ -108,7 +108,7 @@ export default function EditItemModal({
         }}
       >
         <ThemedText style={{ flex: 5, fontFamily: "Manrope_400Regular" }}>
-          Мощность
+          {I18n.t("main.power")}
         </ThemedText>
         <ThemedText style={{ flex: 1, fontFamily: "Manrope_500Medium" }}>
           {power}
@@ -129,7 +129,7 @@ export default function EditItemModal({
             }}
           >
             <ThemedText style={{ flex: 5, fontFamily: "Manrope_400Regular" }}>
-              Внесение хмеля
+              {I18n.t("main.hops")}
             </ThemedText>
             <View
               style={{
@@ -148,7 +148,7 @@ export default function EditItemModal({
                   color: "#C1C1C1",
                 }}
               >
-                Добавить
+                {I18n.t("main.add")}
               </ThemedText>
             </View>
           </Pressable>
@@ -157,7 +157,7 @@ export default function EditItemModal({
               <ListItem
                 key={index}
                 icon="1"
-                name={`Хмель №${index + 1}`}
+                name={`${I18n.t("main.hops")} №${index + 1}`}
                 time={hop}
                 deletable
                 onDeleted={() => onHopDeleted(index)}

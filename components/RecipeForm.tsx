@@ -13,7 +13,7 @@ import ListItem from "./ListItem";
 import EditItemModal from "./EditItemModal";
 import RangeModal from "./RangeModal";
 import TimeModal from "./TimeModal";
-
+import i18n from "../i18n";
 type Props = {
   value?: any;
   immediateSaving?: boolean;
@@ -37,7 +37,7 @@ export default function RecipeFrom({
 
   const initialTemperaturePauses = [
     {
-      name: "Температурная пауза",
+      name: i18n.t("main.temperaturePause"),
       temperature: 0,
       time: 0,
       power: 100,
@@ -45,7 +45,7 @@ export default function RecipeFrom({
       hops: [],
     },
     {
-      name: "Температурная пауза",
+      name: i18n.t("main.temperaturePause"),
       temperature: 0,
       time: 0,
       power: 100,
@@ -53,7 +53,7 @@ export default function RecipeFrom({
       hops: [],
     },
     {
-      name: "Температурная пауза",
+      name: i18n.t("main.temperaturePause"),
       temperature: 0,
       time: 0,
       power: 100,
@@ -61,7 +61,7 @@ export default function RecipeFrom({
       hops: [],
     },
     {
-      name: "Температурная пауза",
+      name: i18n.t("main.temperaturePause"),
       temperature: 0,
       time: 0,
       power: 100,
@@ -69,7 +69,7 @@ export default function RecipeFrom({
       hops: [],
     },
     {
-      name: "Температурная пауза",
+      name: i18n.t("main.temperaturePause"),
       temperature: 0,
       time: 0,
       power: 100,
@@ -213,7 +213,7 @@ export default function RecipeFrom({
             onSave(temperaturePauses);
           }}
         >
-          <Text style={styles.saveButtonText}>Сохр!анить</Text>
+          <Text style={styles.saveButtonText}>{i18n.t("main.save")}</Text>
         </Pressable>
       )}
       <EditItemModal
@@ -250,7 +250,7 @@ export default function RecipeFrom({
       ></EditItemModal>
       <RangeModal
         isVisible={typeEdit === "temp" && !isModalVisible}
-        label="Temperature"
+        label={i18n.t("main.temperature")}
         value={selectTemp}
         symbol="gradus"
         onCancel={() => {
@@ -265,7 +265,7 @@ export default function RecipeFrom({
       ></RangeModal>
       <RangeModal
         isVisible={typeEdit === "power" && !isModalVisible}
-        label="Power"
+        label={i18n.t("main.power")}
         value={selectPower}
         symbol="percent"
         onCancel={() => {
@@ -280,7 +280,7 @@ export default function RecipeFrom({
       ></RangeModal>
       <TimeModal
         isVisible={typeEdit === "time" && !isModalVisible}
-        label="Time"
+        label={i18n.t("main.time.label")}
         value={selectTime}
         onCancel={() => {
           setIsModalVisible(true);
@@ -294,7 +294,7 @@ export default function RecipeFrom({
       ></TimeModal>
       <TimeModal
         isVisible={typeEdit === "hop" && !isModalVisible}
-        label="Time"
+        label={i18n.t("main.time.label")}
         value={selectHops[selectedHopIndex] ?? 0}
         max={selectTime}
         onCancel={() => {

@@ -16,6 +16,7 @@ import { ThemedView } from "@/components/ThemedView";
 import TextModal from "@/components/TextModal";
 import ConnectionSettingModal from "@/components/ConnectionSettingModal";
 import useAppStore from "@/lib/useAppStore";
+import i18n from "../i18n";
 
 export default function CreateScreen() {
   const {
@@ -47,9 +48,8 @@ export default function CreateScreen() {
 
   const showNotifyAlert = () => {
     Alert.alert(
-      "Ошибка редактирования",
-      "Для редактирования настроек убедитесь что приложение сопрежено с автоматикой",
-      [{ text: "OK", onPress: () => console.log("OK Pressed") }]
+      i18n.t("alerts.editError"),
+      i18n.t("alerts.editErrorDescription")
     );
   };
 
@@ -83,8 +83,8 @@ export default function CreateScreen() {
         <ScrollView style={{ paddingHorizontal: 16 }}>
           <SettingItem
             icon="wifi-settings"
-            name="Подключение"
-            description="Настройки подключения wifi"
+            name={i18n.t("settings.connection.name")}
+            description={i18n.t("settings.connection.description")}
             disabled={isFetcheSettings}
             onPress={async () => {
               try {
@@ -96,14 +96,14 @@ export default function CreateScreen() {
           />
           <SettingItem
             icon="tune-vertical-variant"
-            name="Пид регулятор"
-            description="Настройки кооэфицентов пид регулятора"
+            name={i18n.t("pid.name")}
+            description={i18n.t("pid.description")}
             disabled={isFetcheSettings}
             onPress={async () => {
               try {
                 if (!isOnline) {
                   showNotifyAlert();
-                  throw new Error("Ошибка сохранения");
+                  throw new Error(i18n.t("alerts.saveError"));
                 }
                 setSelectKp(kp);
                 setSelectKi(ki);
@@ -116,14 +116,14 @@ export default function CreateScreen() {
           />
           <SettingItem
             icon="thermometer-lines"
-            name="Настройка температурой дельты"
-            description="Настройки макс. разницы темп. датчиков"
+            name={i18n.t("settings.temperatureDelta.name")}
+            description={i18n.t("settings.temperatureDelta.description")}
             disabled={isFetcheSettings}
             onPress={() => {
               try {
                 if (!isOnline) {
                   showNotifyAlert();
-                  throw new Error("Ошибка сохранения");
+                  throw new Error(i18n.t("alerts.saveError"));
                 }
                 setIsSensorDiffdModalVisible(true);
               } catch (e) {
@@ -133,14 +133,14 @@ export default function CreateScreen() {
           />
           <SettingItem
             icon="thermometer-high"
-            name="Температура кипения"
-            description="Настройки температуры кипения"
+            name={i18n.t("settings.boilingPoint.name")}
+            description={i18n.t("settings.boilingPoint.description")}
             disabled={isFetcheSettings}
             onPress={() => {
               try {
                 if (!isOnline) {
                   showNotifyAlert();
-                  throw new Error("Ошибка сохранения");
+                  throw new Error(i18n.t("alerts.saveError"));
                 }
                 setIsBoilingPointModalVisible(true);
               } catch (e) {
@@ -192,7 +192,7 @@ export default function CreateScreen() {
         />
         <RangeModal
           isVisible={typeEdit === "kp" && !isPidModalVisible}
-          label="Пропорциональная составляющея"
+          label={i18n.t("pid.kp")}
           step={0.001}
           min={0}
           max={1}
@@ -210,7 +210,7 @@ export default function CreateScreen() {
         ></RangeModal>
         <RangeModal
           isVisible={typeEdit === "ki" && !isPidModalVisible}
-          label="Интегрирующая составляющея"
+          label={i18n.t("pid.ki")}
           step={0.001}
           value={selectKi}
           min={0}
@@ -228,7 +228,7 @@ export default function CreateScreen() {
         ></RangeModal>
         <RangeModal
           isVisible={typeEdit === "kd" && !isPidModalVisible}
-          label="Дифференцирующая составляющея"
+          label={i18n.t("pid.kd")}
           step={0.001}
           min={0}
           max={1}
@@ -246,7 +246,7 @@ export default function CreateScreen() {
         ></RangeModal>
         <RangeModal
           isVisible={isSensorDiffModalVisible}
-          label="Макс разица темп. датчиков"
+          label={i18n.t("settings.temperatureDelta.name")}
           step={1}
           min={0}
           max={100}
@@ -261,7 +261,7 @@ export default function CreateScreen() {
         ></RangeModal>
         <RangeModal
           isVisible={isBoilingPointModalVisible}
-          label=""
+          label={i18n.t("settings.boilingPoint.name")}
           step={1}
           min={0}
           max={100}
@@ -276,7 +276,7 @@ export default function CreateScreen() {
         ></RangeModal>
         <TextModal
           isVisible={typeEdit === "ssid" && !isWifiModalVisible}
-          label="SSID"
+          label={i18n.t("settings.connection.ssid")}
           value={selectSsid}
           onCancel={() => {
             setTypeEdit(null);
@@ -290,7 +290,7 @@ export default function CreateScreen() {
         />
         <TextModal
           isVisible={typeEdit === "password" && !isWifiModalVisible}
-          label="Пароль"
+          label={i18n.t("settings.connection.password")}
           value={selectPassword}
           secureTextEntry={true}
           onCancel={() => {

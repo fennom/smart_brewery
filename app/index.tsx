@@ -12,6 +12,7 @@ import useAppStore from "@/lib/useAppStore";
 import ModeMenu from "@/components/ModeMenu";
 import ConnectionCard from "@/components/ConnectionCard";
 import HeaderModeMenu from "@/components/HeaderModeMenu";
+import i18n from "../i18n";
 
 export default function HomeScreen() {
   const [showPumpRangeModal, setShowPumpRangeModal] = useState<boolean>(false);
@@ -74,20 +75,20 @@ export default function HomeScreen() {
               {isOnline && (
                 <Card
                   icon="thermometer"
-                  label="Температура"
+                  label={i18n.t("main.temperature.label")}
                   value={temperature.toFixed(1) + "°"}
                   subValue={targetTemperature + "°"}
-                  note="Текущая/Целевая"
+                  note={i18n.t("main.temperature.note")}
                   type="blue"
                 ></Card>
               )}
               {!isOnline && <ConnectionCard></ConnectionCard>}
               <Card
                 icon="pump"
-                label="Насос"
+                label={i18n.t("main.pump.label")}
                 value={pumpLimit.toString()}
                 valueSymbol="%"
-                note="Мощность насоса в %"
+                note={i18n.t("main.pump.note")}
                 isToggle={true}
                 isEnable={isPumpEnabled}
                 onPress={() => setShowPumpRangeModal(true)}
@@ -98,17 +99,17 @@ export default function HomeScreen() {
             <View style={{ width: "50%", paddingLeft: 4, gap: 8 }}>
               <Card
                 icon="lightning-bolt-outline"
-                label="Тэн"
+                label={i18n.t("main.heater.label")}
                 value={heatLimit.toString()}
                 valueSymbol="%"
-                note="Мощность тэна в %"
+                note={i18n.t("main.heater.note")}
                 disabled={!isOnline}
               ></Card>
               <Card
                 icon="timer-outline"
-                label="Время"
+                label={i18n.t("main.time.label")}
                 value={toHmsTimeString(timeToEnd)}
-                note="Оставшееся время"
+                note={i18n.t("main.time.note")}
                 disabled={!isOnline}
               ></Card>
             </View>
@@ -122,9 +123,9 @@ export default function HomeScreen() {
             }}
           >
             <ThemedText style={{ fontFamily: "Manrope_300Light" }}>
-              Этапы
+              {i18n.t("main.stages")}
               <ThemedText style={{ fontFamily: "Manrope_500Medium" }}>
-                {" затерания"}
+                {i18n.t("main.mashing")}
               </ThemedText>
             </ThemedText>
             <View style={{ flexDirection: "row", gap: 8 }}>
@@ -135,7 +136,9 @@ export default function HomeScreen() {
                     stop();
                   }}
                 >
-                  {mode === "idle" ? "Сброс" : "Стоп"}
+                  {mode === "idle"
+                    ? i18n.t("main.controls.reset")
+                    : i18n.t("main.controls.stop")}
                 </ThemedButton>
               )}
 
@@ -157,7 +160,9 @@ export default function HomeScreen() {
                 }}
                 disabled={!recipe}
               >
-                {isPaused || mode === "idle" ? "Старт" : "Пауза"}
+                {isPaused || mode === "idle"
+                  ? i18n.t("main.controls.start")
+                  : i18n.t("main.controls.pause")}
               </ThemedButton>
             </View>
           </View>
@@ -178,14 +183,14 @@ export default function HomeScreen() {
                   paddingBottom: 8,
                 }}
               >
-                Рецепт не выбран
+                {i18n.t("main.recipe.notSelected")}
               </ThemedText>
               <View>
                 <ThemedButton
                   onPress={() => router.navigate("/create")}
                   disabled={!isOnline}
                 >
-                  Добавить рецепт
+                  {i18n.t("main.recipe.add")}
                 </ThemedButton>
               </View>
             </View>
@@ -207,7 +212,7 @@ export default function HomeScreen() {
         </View>
         <RangeModal
           isVisible={showPumpRangeModal}
-          label="Насос"
+          label={i18n.t("main.pump.label")}
           value={pumpLimit}
           symbol="percent"
           onCancel={() => {
