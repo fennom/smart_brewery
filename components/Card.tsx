@@ -1,19 +1,11 @@
-import {
-  View,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  TextInput as ReactInput,
-  KeyboardTypeOptions,
-  Pressable,
-} from "react-native";
-import React, { PropsWithChildren, useState } from "react";
+import { View, StyleSheet, Pressable } from "react-native";
+import React, { PropsWithChildren } from "react";
 import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
-import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 type CardProps = PropsWithChildren & {
-  icon: string;
+  icon: keyof typeof MaterialCommunityIcons.glyphMap;
   label: string;
   value: string;
   valueSymbol?: string;
@@ -34,7 +26,6 @@ export default function Card({
   value,
   valueSymbol,
   subValue,
-  subValueSymbol,
   note,
   type = "black",
   children,
