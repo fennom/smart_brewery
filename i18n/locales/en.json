@@ -4,6 +4,12 @@
     "error": "An error occurred",
     "retry": "Retry"
   },
+  "confirm": {
+    "addMalt": "Add malt",
+    "addHops": "Add hops #",
+    "extractSpentGrains": "Extract spent grains",
+    "finish": "End program"
+  },
   "auth": {
     "login": "Login",
     "logout": "Logout",
@@ -92,4 +98,4 @@
     "save": "Save",
     "cancel": "Cancel"
   }
-} 
+}

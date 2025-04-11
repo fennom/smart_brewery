@@ -24,7 +24,7 @@ export default function Data() {
   });
 
   const showNotifyAlert = () => {
-    Alert.alert(i18n.t("alerts.confirmation"), confirmMessage, [
+    Alert.alert(i18n.t("alerts.confirmation"), i18n.t(confirmMessage), [
       { text: "OK", onPress: () => console.log("OK Pressed") },
     ]);
   };
@@ -40,7 +40,7 @@ export default function Data() {
       Notifications.scheduleNotificationAsync({
         content: {
           title: i18n.t("alerts.confirmation"),
-          body: confirmMessage,
+          body: i18n.t(confirmMessage),
         },
         trigger: null,
       });
