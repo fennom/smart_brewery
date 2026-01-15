@@ -6,7 +6,7 @@
   },
   "confirm": {
     "addMalt": "Add malt",
-    "addHops": "Add hops #",
+    "addHops": "Add hops",
     "extractSpentGrains": "Extract spent grains",
     "finish": "End program"
   },
@@ -29,9 +29,12 @@
   },
   "alerts": {
     "confirmation": "Confirmation Required",
+    "deleteRecipe": "Do you really want to delete the recipe?",
     "editError": "Edit Error",
-    "editErrorDescription": "To edit settings, make sure the app is connected to the automation",
-    "saveError": "Save Error"
+    "editErrorDescription": "To edit the settings, make sure that the application is paired with the device",
+    "saveError": "Save Error",
+    "cancel": "Cancel",
+    "ok": "OK"
   },
   "header": {
     "select": "Select",
@@ -42,7 +45,8 @@
       "name": "Connection",
       "description": "WiFi connection settings",
       "ssid": "SSID",
-      "password": "Password"
+      "password": "Password",
+      "connected": "Connected"
     },
     "temperatureDelta": {
       "name": "Temperature Delta Settings",
@@ -70,6 +74,7 @@
     },
     "time": {
       "label": "Time",
+      "minutes": "Minutes",
       "note": "Remaining time"
     },
     "stages": "Stages",
@@ -82,7 +87,9 @@
     },
     "recipe": {
       "notSelected": "Recipe not selected",
-      "add": "Add recipe"
+      "add": "Create a recipe",
+      "or": "or",
+      "list": "Choose recipe"
     },
     "connection": {
       "label": "Connection",
@@ -96,6 +103,18 @@
     "auto": "Auto mode",
     "manual": "Manual mode",
     "save": "Save",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "saveAndAdd": "Save and select",
+    "updateAndAdd": "Update and select",
+    "choose": "Select",
+    "recipeName": "Recipe name",
+    "recipes": "Recipes",
+    "create": "A new recipe",
+    "settings": "Settings"
+  },
+  "recipe": {
+    "temp": "Temperature",
+    "power": "Power",
+    "noRecipes": "No recipes"
   }
 }

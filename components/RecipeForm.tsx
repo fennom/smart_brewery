@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   StyleSheet,
   View,
@@ -14,16 +14,27 @@ import EditItemModal from "./EditItemModal";
 import RangeModal from "./RangeModal";
 import TimeModal from "./TimeModal";
 import i18n from "../i18n";
+import TextModal from "./TextModal";
 type Props = {
   value?: any;
   immediateSaving?: boolean;
-  onSave: (temperaturePauses: any[]) => void;
+  showOnlyEdited?: boolean;
+  saveBtnText?: string;
+  saveAndAddBtnText?: string;
+  step?: number;
+  stage?: number;
+  onSave: (temperaturePauses: any[], add: boolean) => void;
 };
 
 export default function RecipeFrom({
   value,
   onSave,
   immediateSaving = false,
+  showOnlyEdited = false,
+  saveBtnText = i18n.t("main.add"),
+  saveAndAddBtnText = i18n.t("main.saveAndAdd"),
+  stage = 0,
+  step = 0,
 }: Props) {
   const colorScheme = useColorScheme();
   const [selectTemp, setSelectTemp] = useState<number>(0);
@@ -78,7 +89,14 @@ export default function RecipeFrom({
     },
   ];
   const [temperaturePauses, setTemperaturePauses] = React.useState(
-    value ?? initialTemperaturePauses
+    value
+      ? showOnlyEdited
+        ? value
+        : initialTemperaturePauses.map((e, i) => {
+            if (value[i]) return value[i];
+            return e;
+          })
+      : initialTemperaturePauses
   );
 
   const pushOrUpdateSelectHops = (time: number, index: number) => {
@@ -132,34 +150,6 @@ export default function RecipeFrom({
     setTemperaturePauses(newList);
   };
 
-  const appendTemperaturePause = () => {
-    const newList = [...temperaturePauses];
-    newList.push({ temperature: 0, time: 0 });
-    setTemperaturePauses(newList);
-  };
-
-  const [boilingTimes, setBoilingTimes] = React.useState(
-    value?.boilingTimes ?? [0, 0, 0, 0, 0]
-  );
-
-  const setBoilingTime = (time: number, index: number) => {
-    const newList = [...boilingTimes];
-    newList[index] = time;
-    setBoilingTimes(newList);
-  };
-
-  const deleteBoilingTime = (index: number) => {
-    const newList = [...boilingTimes];
-    newList.splice(index, 1);
-    setBoilingTimes(newList);
-  };
-
-  const appendBoilingTime = () => {
-    const newList = [...boilingTimes];
-    newList.push(0);
-    setBoilingTimes(newList);
-  };
-
   useEffect(() => {
     if (selectedIndex === null) return;
     setSelectTemp(temperaturePauses[selectedIndex ?? 0].temperature);
@@ -167,54 +157,85 @@ export default function RecipeFrom({
     setSelectTime(temperaturePauses[selectedIndex ?? 0].time);
     setSelectHops(temperaturePauses[selectedIndex ?? 0].hops);
   }, [selectedIndex]);
+
   return (
     <View style={{ height: "100%" }}>
-      <ScrollView style={{ paddingBottom: 94 }}>
+      <ScrollView
+        style={{ paddingBottom: 94, paddingHorizontal: 16, paddingTop: 16 }}
+      >
         <View key={1}>
-          {temperaturePauses.map((temperaturePause: any, index: number) => (
-            <ListItem
-              key={index}
-              icon="1"
-              disabled={
-                !(
-                  temperaturePause.edited ||
-                  index === 0 ||
-                  temperaturePauses[index - 1].edited
-                )
-              }
-              name={temperaturePause.name}
-              temp={temperaturePause.temperature}
-              power={temperaturePause.power}
-              time={temperaturePause.time}
-              deletable
-              onDeleted={() => {
-                setTemperature(0, index);
-                setPower(100, index);
-                setTime(0, index);
-                setHops([], index);
-                setEdited(false, index);
-              }}
-              onPress={() => {
-                setSelectedIndex(index);
-                setIsModalVisible(true);
-              }}
-            >
-              <ThemedText style={{ fontFamily: "Manrope_500Medium" }}>
-                {index + 1}
-              </ThemedText>
-            </ListItem>
-          ))}
+          {temperaturePauses
+            .filter((i: any) => (showOnlyEdited && i.edited) || !showOnlyEdited)
+            .map((temperaturePause: any, index: number) => (
+              <ListItem
+                key={index}
+                icon="1"
+                disabled={
+                  step > index ||
+                  !(
+                    temperaturePause.edited ||
+                    index === 0 ||
+                    temperaturePauses[index - 1].edited
+                  )
+                }
+                name={temperaturePause.name}
+                temp={temperaturePause.temperature}
+                power={temperaturePause.power}
+                time={temperaturePause.time}
+                deletable
+                onDeleted={() => {
+                  setTemperature(0, index);
+                  setPower(100, index);
+                  setTime(0, index);
+                  setHops([], index);
+                  setEdited(false, index);
+                }}
+                onPress={() => {
+                  setSelectedIndex(index);
+                  setIsModalVisible(true);
+                }}
+              >
+                <ThemedText
+                  style={{
+                    fontFamily: "Manrope_500Medium",
+                    color: step === index ? "#EEDCA0" : "#FCFCFC",
+                  }}
+                >
+                  {index + 1}
+                </ThemedText>
+              </ListItem>
+            ))}
         </View>
       </ScrollView>
       {!immediateSaving && (
-        <Pressable
-          style={[styles.saveButton]}
-          onPress={() => {
-            onSave(temperaturePauses);
+        <View
+          style={{
+            position: "absolute",
+            bottom: 32,
+            left: 16,
+            right: 16,
+            flexDirection: "row",
+            justifyContent: "space-between",
+            gap: 16,
           }}
         >
-          <Text style={styles.saveButtonText}>{i18n.t("main.save")}</Text>
-        </Pressable>
+          <Pressable
+            style={[styles.saveButton]}
+            onPress={() => {
+              onSave(temperaturePauses, false);
+            }}
+          >
+            <Text style={styles.saveButtonText}>{saveBtnText}</Text>
+          </Pressable>
+          <Pressable
+            style={[styles.saveButton]}
+            onPress={() => {
+              onSave(temperaturePauses, true);
+            }}
+          >
+            <Text style={styles.saveButtonText}>{saveAndAddBtnText}</Text>
+          </Pressable>
+        </View>
       )}
       <EditItemModal
         isVisible={isModalVisible !== false}
@@ -241,7 +262,7 @@ export default function RecipeFrom({
             setSelectedIndex(null);
 
             if (immediateSaving) {
-              onSave(temperaturePauses);
+              onSave(temperaturePauses, false);
             }
           }
           setIsModalVisible(false);
@@ -250,7 +271,7 @@ export default function RecipeFrom({
       ></EditItemModal>
       <RangeModal
         isVisible={typeEdit === "temp" && !isModalVisible}
-        label={i18n.t("main.temperature")}
+        label={i18n.t("main.temperature.label")}
         value={selectTemp}
         symbol="gradus"
         onCancel={() => {
@@ -278,35 +299,40 @@ export default function RecipeFrom({
           setSelectPower(saveValue);
         }}
       ></RangeModal>
-      <TimeModal
+      <TextModal
         isVisible={typeEdit === "time" && !isModalVisible}
-        label={i18n.t("main.time.label")}
-        value={selectTime}
+        label={i18n.t("main.time.minutes")}
+        value={selectTime.toString()}
+        keyboardType="numeric"
         onCancel={() => {
           setIsModalVisible(true);
           setTypeEdit(null);
         }}
-        onSave={(saveValue: number) => {
+        onSave={(saveValue: string) => {
           setIsModalVisible(true);
           setTypeEdit(null);
-          setSelectTime(saveValue);
+          setSelectTime(parseInt(saveValue));
         }}
-      ></TimeModal>
-      <TimeModal
+      ></TextModal>
+      <TextModal
         isVisible={typeEdit === "hop" && !isModalVisible}
-        label={i18n.t("main.time.label")}
-        value={selectHops[selectedHopIndex] ?? 0}
-        max={selectTime}
+        label={i18n.t("main.time.minutes") + "Hop"}
+        keyboardType="numeric"
+        value={
+          selectHops[selectedHopIndex]
+            ? selectHops[selectedHopIndex].toString()
+            : "0"
+        }
         onCancel={() => {
           setIsModalVisible(true);
           setTypeEdit(null);
         }}
-        onSave={(saveValue: number) => {
+        onSave={(saveValue: string) => {
           setIsModalVisible(true);
           setTypeEdit(null);
-          pushOrUpdateSelectHops(saveValue, selectedHopIndex);
+          pushOrUpdateSelectHops(parseInt(saveValue), selectedHopIndex);
         }}
-      ></TimeModal>
+      ></TextModal>
     </View>
   );
 }
@@ -325,11 +351,9 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   saveButton: {
-    position: "absolute",
-    backgroundColor: "#FCFCFC",
-    left: 16,
-    right: 16,
-    bottom: 32,
+    flexGrow: 1,
+    backgroundColor: "#121212",
+    paddingHorizontal: 18,
     paddingVertical: 18,
     borderRadius: 31,
     boxShadow: "0px 22px 20px 0px rgba(36, 36, 36, 0.07)",
@@ -339,7 +363,7 @@ const styles = StyleSheet.create({
     fontSize: 19,
     lineHeight: 26,
     textAlign: "center",
-    color: "#000",
+    color: "#FCFCFC",
   },
   buttonAdd: {
     paddingVertical: 8,

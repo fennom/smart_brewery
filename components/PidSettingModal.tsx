@@ -40,10 +40,10 @@ export default function PidSettingModal({
         }}
       >
         <ThemedText
+          darkColor="#C1C1C1"
           style={{
             fontFamily: "Manrope_300Light",
             fontSize: 12,
-            color: "#C1C1C1",
             paddingBottom: 8,
             textAlign: "center",
           }}

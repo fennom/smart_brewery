@@ -22,7 +22,6 @@ export default function ThemedButton({
       disabled={disabled}
       onPress={onPress}
       style={{
-        alignSelf: "flex-start",
         paddingLeft: icon ? 8 : 16,
         paddingRight: 16,
         paddingTop: 4,

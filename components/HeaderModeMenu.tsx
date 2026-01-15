@@ -19,13 +19,47 @@ export default function HeaderModeMenu() {
           {i18n.t("header.mode")}
         </ThemedText>
       </Text>
-      <Pressable onPress={() => router.navigate("/settings")}>
-        <MaterialCommunityIcons
-          name="cog-outline"
-          color={Colors[colorScheme ?? "light"].text}
-          size={24}
-        />
-      </Pressable>
+      <View style={{ gap: 8, flexDirection: "row" }}>
+        <Pressable
+          style={({ pressed }) => ({
+            width: 32,
+            height: 32,
+            borderRadius: 100,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: pressed
+              ? Colors[colorScheme ?? "light"].borderColor
+              : "rgba(0, 0, 0, 0)",
+          })}
+          onPress={() => router.navigate("/recipes")}
+        >
+          <MaterialCommunityIcons
+            name="receipt"
+            color={Colors[colorScheme ?? "light"].text}
+            size={24}
+          />
+        </Pressable>
+
+        <Pressable
+          style={({ pressed }) => ({
+            width: 32,
+            height: 32,
+            borderRadius: 100,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: pressed
+              ? Colors[colorScheme ?? "light"].borderColor
+              : "rgba(0, 0, 0, 0)",
+          })}
+          onPress={() => router.navigate("/settings")}
+        >
+          <MaterialCommunityIcons
+            name="cog-outline"
+            color={Colors[colorScheme ?? "light"].text}
+            size={24}
+          />
+        </Pressable>
+      </View>
     </View>
   );
 }

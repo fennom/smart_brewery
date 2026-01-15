@@ -17,7 +17,7 @@ export default function CircleButton({
   const colorScheme = useColorScheme();
   return (
     <View
-      style={[styles.circleButtonContainer, { backgroundColor: "#F8E5A5" }]}
+      style={[styles.circleButtonContainer, { backgroundColor: "#EEDCA0" }]}
     >
       <Pressable
         style={styles.circleButton}

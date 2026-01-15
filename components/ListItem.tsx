@@ -1,7 +1,9 @@
-import { View, StyleSheet, useColorScheme, Pressable } from "react-native";
-import React, { PropsWithChildren, useState } from "react";
+import { View, StyleSheet, Pressable } from "react-native";
+import React, { PropsWithChildren } from "react";
 import { ThemedText } from "./ThemedText";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import i18n from "../i18n";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 type ListItemProps = PropsWithChildren & {
   icon?: string;
@@ -26,8 +28,7 @@ export default function ListItem({
   children,
   onDeleted,
 }: ListItemProps) {
-  const colorScheme = useColorScheme();
-  const [isFocus, setFocus] = useState(false);
+  const color = useThemeColor({}, "icon");
 
   return (
     <Pressable
@@ -61,20 +62,20 @@ export default function ListItem({
         {temp && power && (
           <ThemedText
             style={{
-              color: "#FCFCFC",
               fontSize: 12,
               fontFamily: "Manrope_300Light",
             }}
           >
-            {"Темература "}
+            {i18n.t("recipe.temp") + " "}
             <ThemedText style={{ fontFamily: "Manrope_500Medium" }}>
               {temp}
             </ThemedText>
-            {"° , мощность "}
+            {"° , "}
+            {i18n.t("recipe.power") + " "}
             <ThemedText style={{ fontFamily: "Manrope_500Medium" }}>
               {power}
             </ThemedText>
-            %
+            {"%"}
           </ThemedText>
         )}
       </View>
@@ -93,7 +94,7 @@ export default function ListItem({
       </View>
       {deletable && (
         <Pressable onPress={onDeleted}>
-          <MaterialCommunityIcons name="close" size={24} color={"#FCFCFC"} />
+          <MaterialCommunityIcons name="close" size={24} color={color} />
         </Pressable>
       )}
     </Pressable>

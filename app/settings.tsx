@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
   StyleSheet,
   View,
@@ -17,13 +17,16 @@ import TextModal from "@/components/TextModal";
 import ConnectionSettingModal from "@/components/ConnectionSettingModal";
 import useAppStore from "@/lib/useAppStore";
 import i18n from "../i18n";
+import { WiFiService } from "@/lib/WiFiManager";
+import { router } from "expo-router";
+import { useShallow } from "zustand/react/shallow";
 
-export default function CreateScreen() {
+export default function SettingsScreen() {
   const {
     isOnline,
     settings: { ki, kp, kd, sensorDiff, boilingPoint },
     isFetcheSettings,
-  } = useAppStore();
+  } = useAppStore(useShallow((state) => state));
   const colorScheme = useColorScheme();
 
   const [isPidModalVisible, setIsPidModalVisible] = useState<boolean>(false);
@@ -32,47 +35,176 @@ export default function CreateScreen() {
   const [isBoilingPointModalVisible, setIsBoilingPointModalVisible] =
     useState<boolean>(false);
   const [isWifiModalVisible, setIsWifiModalVisible] = useState<boolean>(false);
+  const [isWifiPassModalVisible, setIsWifiPassModalVisible] =
+    useState<boolean>(false);
+  const [wifiSsid, setWifiSsid] = useState<string | null>(null);
   const [typeEdit, setTypeEdit] = useState<string | null>(null);
 
   const [selectKp, setSelectKp] = useState<number>(0);
   const [selectKi, setSelectKi] = useState<number>(0);
   const [selectKd, setSelectKd] = useState<number>(0);
-  const [selectSsid, setSelectSsid] = useState<string>("s");
-  const [selectPassword, setSelectPassword] = useState<string>("");
 
   const getSettings = useAppStore((state) => state.fetchSettings);
   const setWifi = useAppStore((state) => state.fetchWifiConfig);
+  const setWifiConfig = useAppStore((state) => state.setWifiConfig);
   const setPid = useAppStore((state) => state.fetchPidConfig);
   const setSensorDiff = useAppStore((state) => state.fetchSensorDiff);
   const setBoilingPoint = useAppStore((state) => state.fetchBoilingPoint);
 
-  const showNotifyAlert = () => {
+  const showNotifyAlert = useCallback(() => {
     Alert.alert(
       i18n.t("alerts.editError"),
       i18n.t("alerts.editErrorDescription")
     );
-  };
+  }, []);
 
   useEffect(() => {
-    if (!isOnline) {
-      showNotifyAlert();
-      return;
+    console.log("component rerendered");
+  });
+
+  useEffect(() => {
+    if (isOnline) {
+      getSettings();
     }
-    getSettings();
+  }, [isOnline, showNotifyAlert, getSettings]);
+
+  const handleWifiPress = useCallback(async () => {
+    try {
+      if (!isOnline) {
+        showNotifyAlert();
+        throw new Error(i18n.t("alerts.saveError"));
+      }
+      setIsWifiModalVisible(true);
+    } catch (e) {
+      console.log(e);
+    }
   }, []);
+
+  const handlePidPress = useCallback(async () => {
+    try {
+      if (!isOnline) {
+        showNotifyAlert();
+        throw new Error(i18n.t("alerts.saveError"));
+      }
+      setSelectKp(kp);
+      setSelectKi(ki);
+      setSelectKd(kd);
+      setIsPidModalVisible(true);
+    } catch (e) {
+      console.log(e);
+    }
+  }, [isOnline, kp, ki, kd, showNotifyAlert]);
+
+  const handleSensorDiffPress = useCallback(() => {
+    try {
+      if (!isOnline) {
+        showNotifyAlert();
+        throw new Error(i18n.t("alerts.saveError"));
+      }
+      setIsSensorDiffdModalVisible(true);
+    } catch (e) {
+      console.log(e);
+    }
+  }, [isOnline, showNotifyAlert]);
+
+  const handleBoilingPointPress = useCallback(() => {
+    try {
+      if (!isOnline) {
+        showNotifyAlert();
+        throw new Error(i18n.t("alerts.saveError"));
+      }
+      setIsBoilingPointModalVisible(true);
+    } catch (e) {
+      console.log(e);
+    }
+  }, [isOnline, showNotifyAlert]);
+
+  const handleWifiSsidSave = useCallback(async (ssid: string) => {
+    try {
+      setWifiSsid(ssid);
+      setIsWifiModalVisible(false);
+      setIsWifiPassModalVisible(true);
+    } catch (e) {
+      console.log(e);
+    }
+  }, []);
+
+  const handleWifiSave = useCallback(
+    async (password: string) => {
+      try {
+        const result = await setWifi(wifiSsid ?? "", password);
+        if (result) {
+          await WiFiService.getInstance().connectToWifi(
+            wifiSsid ?? "",
+            password
+          );
+
+          setIsWifiModalVisible(false);
+          setIsWifiPassModalVisible(false);
+          setWifiConfig(wifiSsid ?? "", password);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    },
+    [wifiSsid, setWifi]
+  );
+
+  const handlePidSave = useCallback(async () => {
+    try {
+      setTypeEdit(null);
+      setPid(selectKp, selectKi, selectKd);
+      setIsPidModalVisible(false);
+    } catch (e) {
+      console.log(e);
+    }
+  }, [selectKp, selectKi, selectKd, setPid]);
+
+  const handleRangeSave = useCallback(
+    (type: string, value: number) => {
+      switch (type) {
+        case "kp":
+          setSelectKp(value);
+          setIsPidModalVisible(true);
+          setTypeEdit(null);
+          break;
+        case "ki":
+          setSelectKi(value);
+          setIsPidModalVisible(true);
+          setTypeEdit(null);
+          break;
+        case "kd":
+          setSelectKd(value);
+          setIsPidModalVisible(true);
+          setTypeEdit(null);
+          break;
+        case "sensorDiff":
+          setSensorDiff(value);
+          setIsSensorDiffdModalVisible(false);
+          break;
+        case "boilingPoint":
+          setBoilingPoint(value);
+          setIsBoilingPointModalVisible(false);
+          break;
+      }
+    },
+    [setSensorDiff, setBoilingPoint, setSelectKd, setSelectKi, setSelectKp]
+  );
+
+  const containerStyle = useMemo(
+    () => [
+      styles.container,
+      {
+        backgroundColor: Colors[colorScheme ?? "light"].background,
+        flex: 1,
+      },
+    ],
+    [colorScheme]
+  );
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView
-        style={[
-          styles.container,
-          {
-            backgroundColor: Colors[colorScheme ?? "light"].background,
-            flex: 1,
-          },
-        ]}
-        edges={["top"]}
-      >
+      <SafeAreaView style={containerStyle} edges={["top"]}>
         {isFetcheSettings && (
           <View style={styles.loader}>
             <ThemedView style={styles.indicator}>
@@ -86,164 +218,69 @@ export default function CreateScreen() {
             name={i18n.t("settings.connection.name")}
             description={i18n.t("settings.connection.description")}
             disabled={isFetcheSettings}
-            onPress={async () => {
-              try {
-                setIsWifiModalVisible(true);
-              } catch (e) {
-                console.log(e);
-              }
-            }}
+            onPress={handleWifiPress}
           />
           <SettingItem
             icon="tune-vertical-variant"
             name={i18n.t("pid.name")}
             description={i18n.t("pid.description")}
             disabled={isFetcheSettings}
-            onPress={async () => {
-              try {
-                if (!isOnline) {
-                  showNotifyAlert();
-                  throw new Error(i18n.t("alerts.saveError"));
-                }
-                setSelectKp(kp);
-                setSelectKi(ki);
-                setSelectKd(kd);
-                setIsPidModalVisible(true);
-              } catch (e) {
-                console.log(e);
-              }
-            }}
+            onPress={handlePidPress}
           />
           <SettingItem
             icon="thermometer-lines"
             name={i18n.t("settings.temperatureDelta.name")}
             description={i18n.t("settings.temperatureDelta.description")}
             disabled={isFetcheSettings}
-            onPress={() => {
-              try {
-                if (!isOnline) {
-                  showNotifyAlert();
-                  throw new Error(i18n.t("alerts.saveError"));
-                }
-                setIsSensorDiffdModalVisible(true);
-              } catch (e) {
-                console.log(e);
-              }
-            }}
+            onPress={handleSensorDiffPress}
           />
           <SettingItem
             icon="thermometer-high"
             name={i18n.t("settings.boilingPoint.name")}
             description={i18n.t("settings.boilingPoint.description")}
             disabled={isFetcheSettings}
-            onPress={() => {
-              try {
-                if (!isOnline) {
-                  showNotifyAlert();
-                  throw new Error(i18n.t("alerts.saveError"));
-                }
-                setIsBoilingPointModalVisible(true);
-              } catch (e) {
-                console.log(e);
-              }
-            }}
+            onPress={handleBoilingPointPress}
           />
         </ScrollView>
-        <ConnectionSettingModal
-          isVisible={isWifiModalVisible}
-          onCancel={() => {
-            setIsWifiModalVisible(false);
-          }}
-          onEdit={(type) => {
-            setTypeEdit(type);
-            setIsWifiModalVisible(false);
-          }}
-          onSave={async () => {
-            try {
-              setTypeEdit(null);
-              setWifi(selectSsid, selectPassword);
-              setIsWifiModalVisible(false);
-            } catch (e) {
-              console.log(e);
-            }
-          }}
-        />
         <PidSettingModal
           isVisible={isPidModalVisible}
           kp={selectKp}
-          kd={selectKd}
           ki={selectKi}
-          onCancel={() => {
-            setIsPidModalVisible(false);
-          }}
+          kd={selectKd}
+          onCancel={() => setIsPidModalVisible(false)}
           onEdit={(type) => {
             setTypeEdit(type);
             setIsPidModalVisible(false);
           }}
-          onSave={async () => {
-            try {
-              setTypeEdit(null);
-              setPid(selectKp, selectKi, selectKi);
-              setIsPidModalVisible(false);
-            } catch (e) {
-              console.log(e);
-            }
-          }}
+          onSave={handlePidSave}
         />
-        <RangeModal
-          isVisible={typeEdit === "kp" && !isPidModalVisible}
-          label={i18n.t("pid.kp")}
-          step={0.001}
-          min={0}
-          max={1}
-          fixed={3}
-          value={selectKp}
-          onCancel={() => {
-            setIsPidModalVisible(true);
-            setTypeEdit(null);
-          }}
-          onSave={(saveValue: number) => {
-            setIsPidModalVisible(true);
-            setTypeEdit(null);
-            setSelectKp(parseFloat(saveValue.toFixed(3)));
-          }}
-        ></RangeModal>
-        <RangeModal
-          isVisible={typeEdit === "ki" && !isPidModalVisible}
-          label={i18n.t("pid.ki")}
-          step={0.001}
-          value={selectKi}
-          min={0}
-          max={1}
-          fixed={3}
-          onCancel={() => {
-            setIsPidModalVisible(true);
-            setTypeEdit(null);
-          }}
-          onSave={(saveValue: number) => {
-            setIsPidModalVisible(true);
-            setTypeEdit(null);
-            setSelectKi(saveValue);
-          }}
-        ></RangeModal>
-        <RangeModal
-          isVisible={typeEdit === "kd" && !isPidModalVisible}
-          label={i18n.t("pid.kd")}
-          step={0.001}
-          min={0}
-          max={1}
-          fixed={3}
-          value={selectKd}
-          onCancel={() => {
-            setIsPidModalVisible(true);
-            setTypeEdit(null);
-          }}
-          onSave={(saveValue: number) => {
-            setIsPidModalVisible(true);
-            setTypeEdit(null);
-            setSelectKd(saveValue);
-          }}
-        ></RangeModal>
+        <ConnectionSettingModal
+          isVisible={isWifiModalVisible}
+          onCancel={() => setIsWifiModalVisible(false)}
+          onSave={handleWifiSsidSave}
+        />
+        {typeEdit && !isPidModalVisible && (
+          <RangeModal
+            isVisible={true}
+            label={i18n.t(`pid.${typeEdit}`)}
+            step={0.001}
+            min={0}
+            max={1}
+            fixed={3}
+            value={
+              typeEdit === "kp"
+                ? selectKp
+                : typeEdit === "ki"
+                ? selectKi
+                : selectKd
+            }
+            onCancel={() => {
+              setIsPidModalVisible(true);
+              setTypeEdit(null);
+            }}
+            onSave={(value) => handleRangeSave(typeEdit, value)}
+          />
+        )}
         <RangeModal
           isVisible={isSensorDiffModalVisible}
           label={i18n.t("settings.temperatureDelta.name")}
@@ -251,14 +288,9 @@ export default function CreateScreen() {
           min={0}
           max={100}
           value={sensorDiff}
-          onCancel={() => {
-            setIsSensorDiffdModalVisible(false);
-          }}
-          onSave={(saveValue: number) => {
-            setSensorDiff(saveValue);
-            setIsSensorDiffdModalVisible(false);
-          }}
-        ></RangeModal>
+          onCancel={() => setIsSensorDiffdModalVisible(false)}
+          onSave={(value) => handleRangeSave("sensorDiff", value)}
+        />
         <RangeModal
           isVisible={isBoilingPointModalVisible}
           label={i18n.t("settings.boilingPoint.name")}
@@ -266,42 +298,15 @@ export default function CreateScreen() {
           min={0}
           max={100}
           value={boilingPoint}
-          onCancel={() => {
-            setIsBoilingPointModalVisible(false);
-          }}
-          onSave={(saveValue: number) => {
-            setBoilingPoint(saveValue);
-            setIsBoilingPointModalVisible(false);
-          }}
-        ></RangeModal>
-        <TextModal
-          isVisible={typeEdit === "ssid" && !isWifiModalVisible}
-          label={i18n.t("settings.connection.ssid")}
-          value={selectSsid}
-          onCancel={() => {
-            setTypeEdit(null);
-            setIsWifiModalVisible(true);
-          }}
-          onSave={(saveValue: string) => {
-            setSelectSsid(saveValue);
-            setTypeEdit(null);
-            setIsWifiModalVisible(true);
-          }}
+          onCancel={() => setIsBoilingPointModalVisible(false)}
+          onSave={(value) => handleRangeSave("boilingPoint", value)}
         />
         <TextModal
-          isVisible={typeEdit === "password" && !isWifiModalVisible}
+          isVisible={isWifiPassModalVisible}
           label={i18n.t("settings.connection.password")}
-          value={selectPassword}
-          secureTextEntry={true}
-          onCancel={() => {
-            setTypeEdit(null);
-            setIsWifiModalVisible(true);
-          }}
-          onSave={(saveValue: string) => {
-            setSelectPassword(saveValue);
-            setTypeEdit(null);
-            setIsWifiModalVisible(true);
-          }}
+          value=""
+          onCancel={() => setIsWifiPassModalVisible(false)}
+          onSave={handleWifiSave}
         />
       </SafeAreaView>
     </SafeAreaProvider>
@@ -310,8 +315,7 @@ export default function CreateScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    height: "90%",
-    paddingTop: StatusBar.currentHeight,
+    flex: 1,
   },
   loader: {
     position: "absolute",
@@ -321,7 +325,6 @@ const styles = StyleSheet.create({
     right: 0,
     flexDirection: "row",
     justifyContent: "center",
-
     padding: 10,
   },
   indicator: {

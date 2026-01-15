@@ -1,23 +1,27 @@
 import useAppStore from "@/lib/useAppStore";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
 import { useEffect } from "react";
 import { Alert } from "react-native";
 import i18n from "../i18n";
+import { useShallow } from "zustand/react/shallow";
+import { WebsocketService } from "@/lib/WebsocketService";
+import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
 
 export default function Data() {
   const {
-    info: { isNeedConfirm, confirmMessage },
-  } = useAppStore();
-
-  const setBaseUrl = useAppStore((state) => state.setBaseUrl);
+    ip,
+    getWebsocketUrl,
+    setState,
+    setIsOnline,
+    info: { isNeedConfirm, confirmMessage, mode },
+  } = useAppStore(useShallow((state) => state));
 
   Notifications.requestPermissionsAsync().then((status) => {
     if (!status.granted) return;
     Notifications.setNotificationHandler({
       handleNotification: async () => ({
         shouldShowAlert: true,
-        shouldPlaySound: false,
+        shouldPlaySound: true,
         shouldSetBadge: false,
       }),
     });
@@ -28,12 +32,6 @@ export default function Data() {
       { text: "OK", onPress: () => console.log("OK Pressed") },
     ]);
   };
-
-  AsyncStorage.getItem("baseUrl").then((value) => {
-    if (value !== null) {
-      setBaseUrl(value);
-    }
-  });
 
   useEffect(() => {
     if (isNeedConfirm) {
@@ -48,16 +46,58 @@ export default function Data() {
     }
   }, [isNeedConfirm]);
 
-  const setState = useAppStore((state) => state.fetchState);
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     fetchState().catch((e) => alert(e.message));
+  //   }, 1000);
+
+  //   fetchState().catch((e) => alert(e.message));
+
+  //   return () => clearInterval(interval);
+  // }, []);
+
+  // const sleep = (n: number) => new Promise((res) => setTimeout(res, n));
+
+  // const loadData = async () => {
+  //   while (true) {
+  //     await fetchState();
+  //     await sleep(1000);
+  //   }
+  // };
+
   useEffect(() => {
-    const interval = setInterval(() => {
-      setState().catch((e) => alert(e.message));
-    }, 1000);
+    if (mode !== "idle") {
+      activateKeepAwakeAsync();
+    } else {
+      deactivateKeepAwake();
+    }
+  }, [mode]);
 
-    setState().catch((e) => alert(e.message));
+  useEffect(() => {
+    // WebSocket connection URL
+    console.log(ip);
 
-    return () => clearInterval(interval);
+    const webSocketURL = getWebsocketUrl();
+    WebsocketService.getInstance().connect(webSocketURL);
+    WebsocketService.getInstance().onMessageEvent((event) => {
+      setState(event.data);
+    });
+    WebsocketService.getInstance().onConnectEvent((event) => {
+      setIsOnline(true);
+    });
+    WebsocketService.getInstance().onCloseEvent((event) => {
+      setIsOnline(false);
+    });
+    WebsocketService.getInstance().onErrorEvent((event) => {
+      setIsOnline(false);
+    });
+
+    // Clean up the WebSocket connection when the component is unmounted
+    return () => {
+      WebsocketService.getInstance().close();
+    };
   }, []);
 
+  //loadData();
   return null;
 }

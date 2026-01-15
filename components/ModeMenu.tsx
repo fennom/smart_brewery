@@ -23,14 +23,14 @@ export default function ModeMenu({ selected }: ModeMenuProps) {
       <ModeMenuItem
         highlighted={selected === "auto"}
         disabled={selected === "auto"}
-        onPress={() => router.navigate("/")}
+        onPress={() => router.push("/")}
       >
         {i18n.t("main.auto")}
       </ModeMenuItem>
       <ModeMenuItem
         highlighted={selected === "manual"}
         disabled={selected === "manual"}
-        onPress={() => router.navigate("/manual")}
+        onPress={() => router.push("/manual")}
       >
         {i18n.t("main.manual")}
       </ModeMenuItem>

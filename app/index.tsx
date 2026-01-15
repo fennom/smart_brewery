@@ -23,6 +23,7 @@ export default function HomeScreen() {
     isOnline,
     info: {
       mode,
+      step,
       isPumpEnabled,
       isPaused,
       isNeedConfirm,
@@ -76,7 +77,7 @@ export default function HomeScreen() {
                 <Card
                   icon="thermometer"
                   label={i18n.t("main.temperature.label")}
-                  value={temperature.toFixed(1) + "°"}
+                  value={temperature?.toFixed(1) + "°"}
                   subValue={targetTemperature + "°"}
                   note={i18n.t("main.temperature.note")}
                   type="blue"
@@ -86,7 +87,7 @@ export default function HomeScreen() {
               <Card
                 icon="pump"
                 label={i18n.t("main.pump.label")}
-                value={pumpLimit.toString()}
+                value={pumpLimit?.toString() ?? 0}
                 valueSymbol="%"
                 note={i18n.t("main.pump.note")}
                 isToggle={true}
@@ -100,7 +101,7 @@ export default function HomeScreen() {
               <Card
                 icon="lightning-bolt-outline"
                 label={i18n.t("main.heater.label")}
-                value={heatLimit.toString()}
+                value={heatLimit?.toString() ?? 0}
                 valueSymbol="%"
                 note={i18n.t("main.heater.note")}
                 disabled={!isOnline}
@@ -172,27 +173,47 @@ export default function HomeScreen() {
                 height: "auto",
                 alignItems: "center",
                 justifyContent: "center",
+                flexDirection: "column",
                 flex: 2,
               }}
             >
               <ThemedText
+                darkColor="#C1C1C1"
                 style={{
                   fontSize: 12,
                   fontFamily: "Manrope_300Light",
-                  color: "#C1C1C1",
                   paddingBottom: 8,
                 }}
               >
                 {i18n.t("main.recipe.notSelected")}
               </ThemedText>
-              <View>
-                <ThemedButton
-                  onPress={() => router.navigate("/create")}
-                  disabled={!isOnline}
-                >
-                  {i18n.t("main.recipe.add")}
-                </ThemedButton>
-              </View>
+              <ThemedButton
+                onPress={() => router.navigate("/create")}
+                disabled={!isOnline}
+              >
+                {i18n.t("main.recipe.add")}
+              </ThemedButton>
+              <ThemedText
+                darkColor="#C1C1C1"
+                style={{
+                  fontSize: 12,
+                  fontFamily: "Manrope_300Light",
+
+                  paddingBottom: 8,
+                }}
+              >
+                {i18n.t("main.recipe.or")}
+              </ThemedText>
+
+              <ThemedButton
+                icon={"receipt"}
+                onPress={() => {
+                  router.navigate("/recipes");
+                }}
+                disabled={!isOnline}
+              >
+                {i18n.t("main.recipe.list")}
+              </ThemedButton>
             </View>
           )}
           {recipe && (
@@ -200,12 +221,16 @@ export default function HomeScreen() {
               style={{
                 height: "auto",
                 flex: 2,
+                marginHorizontal: -16,
+                marginTop: -16,
               }}
             >
               <RecipeFrom
                 value={recipe}
                 immediateSaving={true}
                 onSave={(temperatures: any[]) => setRecipe(temperatures)}
+                showOnlyEdited={true}
+                step={step}
               />
             </View>
           )}

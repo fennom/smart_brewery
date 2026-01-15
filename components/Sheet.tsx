@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ThemedText } from "@/components/ThemedText";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
-import { PropsWithChildren, useCallback, useEffect, useState } from "react";
-import { Pressable } from "react-native-gesture-handler";
+import { PropsWithChildren } from "react";
+import { Pressable } from "react-native";
 import Animated, {
+  FadeIn,
+  FadeOut,
+  SlideInDown,
+  SlideOutDown,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
@@ -17,9 +21,10 @@ type Props = PropsWithChildren<{
   isVisible: boolean;
   heightSheet?: number;
   onCancel: () => void;
-  onSave: () => void;
+  onSave?: () => void;
   lightColor?: string;
   darkColor?: string;
+  showSaveButton?: boolean;
 }>;
 
 export default function Sheet({
@@ -30,24 +35,9 @@ export default function Sheet({
   children,
   lightColor,
   darkColor,
+  showSaveButton = true,
 }: Props) {
-  const duration = 500;
-  const height = useSharedValue(0);
-  const progress = useDerivedValue(() =>
-    withTiming(isVisible ? 0 : 1, { duration })
-  );
-
-  const sheetStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: progress.value * 2 * height.value }],
-  }));
-
-  const backdropStyle = useAnimatedStyle(() => ({
-    opacity: 1 - progress.value,
-    zIndex: isVisible
-      ? 1
-      : withDelay(duration, withTiming(-1, { duration: 0 })),
-  }));
-
+  const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
   const backgroundColor = useThemeColor(
     { light: lightColor, dark: darkColor },
     "card"
@@ -55,30 +45,38 @@ export default function Sheet({
 
   return (
     <>
-      <Animated.View style={[styles.backdrop, backdropStyle]}>
-        <TouchableOpacity style={{ flex: 1 }} onPress={onCancel} />
-      </Animated.View>
-      <Animated.View
-        onLayout={(e) => {
-          height.value = e.nativeEvent.layout.height;
-        }}
-        style={[
-          { backgroundColor },
-          styles.container,
-          sheetStyle,
-          { height: heightSheet },
-        ]}
-      >
-        {children}
-        <View style={styles.controls}>
-          <Pressable style={styles.button} onPress={onCancel}>
-            <ThemedText>{i18n.t("main.cancel")}</ThemedText>
-          </Pressable>
-          <Pressable style={styles.button} onPress={onSave}>
-            <ThemedText>{i18n.t("main.save")}</ThemedText>
-          </Pressable>
-        </View>
-      </Animated.View>
+      {isVisible && (
+        <>
+          <AnimatedPressable
+            style={styles.backdrop}
+            entering={FadeIn}
+            exiting={FadeOut}
+            onPress={onCancel}
+          />
+          <Animated.View
+            entering={SlideInDown.springify().damping(15)}
+            exiting={SlideOutDown}
+            style={[
+              styles.container,
+              { backgroundColor: backgroundColor, height: heightSheet },
+            ]}
+          >
+            {children}
+            <View
+              style={[styles.controls, { backgroundColor: backgroundColor }]}
+            >
+              <Pressable style={styles.button} onPress={onCancel}>
+                <ThemedText>{i18n.t("main.cancel")}</ThemedText>
+              </Pressable>
+              {showSaveButton && (
+                <Pressable style={styles.button} onPress={onSave}>
+                  <ThemedText>{i18n.t("main.save")}</ThemedText>
+                </Pressable>
+              )}
+            </View>
+          </Animated.View>
+        </>
+      )}
     </>
   );
 }
@@ -90,14 +88,14 @@ const styles = StyleSheet.create({
   },
   container: {
     position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-
+    width: "100%",
     borderTopRightRadius: 16,
     borderTopLeftRadius: 16,
     padding: 16,
     zIndex: 2,
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
   controls: {
     height: 80,

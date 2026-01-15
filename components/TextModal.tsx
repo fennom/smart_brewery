@@ -1,6 +1,6 @@
 import { ThemedText } from "@/components/ThemedText";
-import { View, StyleSheet } from "react-native";
-import { PropsWithChildren, useEffect, useState } from "react";
+import { View, StyleSheet, KeyboardTypeOptions } from "react-native";
+import { PropsWithChildren, useEffect, useRef, useState } from "react";
 import Sheet from "./Sheet";
 import TextInput from "./TextInput";
 
@@ -9,6 +9,7 @@ type Props = PropsWithChildren<{
   value: string;
   label: string;
   secureTextEntry?: boolean;
+  keyboardType?: KeyboardTypeOptions;
   onCancel: () => void;
   onSave: (value: string) => void;
 }>;
@@ -18,13 +19,12 @@ export default function TextModal({
   label,
   value,
   secureTextEntry = false,
+  keyboardType = "default",
   onCancel,
   onSave,
 }: Props) {
   const [currentValue, setCurrentValue] = useState(value);
-  useEffect(() => {
-    if (isVisible) setCurrentValue(value);
-  }, [isVisible]);
+  console.log("rerender");
 
   return (
     <Sheet
@@ -41,10 +41,10 @@ export default function TextModal({
         }}
       >
         <ThemedText
+          darkColor="#C1C1C1"
           style={{
             fontFamily: "Manrope_300Light",
             fontSize: 12,
-            color: "#C1C1C1",
             paddingBottom: 8,
             textAlign: "center",
           }}
@@ -55,7 +55,7 @@ export default function TextModal({
       <View>
         <TextInput
           label={label}
-          keyboardType="default"
+          keyboardType={keyboardType}
           value={currentValue}
           secureTextEntry={secureTextEntry}
           onChangeText={setCurrentValue}
